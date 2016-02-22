@@ -51,8 +51,23 @@ app.use(express.static(__dirname + '/public')); // tells express where to go for
 // Main index page
 app.get('/', function(req,res){
     var context = {};
-    
-    res.render('index', context);
+    var queryData = [];
+    // Grab the page number from the request object if a page number was sent
+    if (req.query != "undefined") {
+        var getRequest = [];
+        for (var key in req.query) {
+            getRequest.push( req.query[key] );
+        }
+        console.log(getRequest);
+        if (getRequest.length > 0) {
+            var pageNum = getRequest[0];
+            var pageTitle = "js-classes-" + pageNum;
+        }
+        else {
+            pageTitle = "introduction";
+        }
+    }
+    res.render(pageTitle, context);
 });
 
 
