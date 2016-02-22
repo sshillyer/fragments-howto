@@ -11,6 +11,44 @@
 redSquare.sides = 4;
 redSquare.color = red;</code>
 
-<p>Things are a lot more convoluted than that! So let's create a function that returns an object using JavaScript. By convention, it should have a capital letter to indicate to the user that this is a constructor method:</p>
+<p>Things are a lot more convoluted than that! I'm assuming you already know JavaScript's object literal notation, but I'll first show how we'd make a redSquare if we wanted to keep it super simple. Also, we're going to give it a single method that tells us, via the console, what it is:</p>
 
-<code></code>
+<code>
+var redSquare = {
+  sides: 4,
+  color: red,
+  identity: function() {
+    console.log(this.sides + " sided " + this.color + " shape.");
+  }
+};</code>
+
+<p>We'd like to create a class though! That's just asingle object and does not help us a lot. We'd like, ultimately, a function that returns an object using JavaScript, because we actually want to be able to pass in some arguments to a constructor of some sort. In C++/Java/C#, we would call such a thing a constructor. By convention, it should have a capital letter to indicate to the user that this is a constructor method. As a reminder, data properties on a JavaScript object are non-function properties. Accessor properties are properties defined as a function that lets us <em>access</em> the data members of the object. Let's go ahead and introduce some syntax you may not even know exists: get and set. We're also going to try and "privatize" our data members so that we must access them through a public interface. Note the leading _underscore now:</p>
+
+<code>
+var redSquare = {
+  // _sides isn't technically private, we're just defining public get/set methods
+  _sides: 4,
+  get sides() {
+    console.log("Reading sides");
+    return this._sides;
+  },
+  set sides(numSides) {
+    console.log("Setting sides to %s", numSides);
+      this._sides = numSides;
+  }
+  _color: "red",
+  get color() {
+    console.log("Reading color");
+    return this._color;
+  },
+  set color(newColor) {
+    console.log("Setting color to %s", newColor);
+    this._color = newColor;
+  }
+  
+  identity: function() {
+    console.log(sides() + " sided " + color() + " shape.");
+  }
+};</code>
+
+<p>Now you could write redSquare.color and retreview the color, redSquare.color("blue") to change it, etc. Note two things: We do not use parenthesis to call the getter, we just call the . (dot) notation. The setter </p>
