@@ -36,7 +36,7 @@
 
 <p>We didn't touch on .defineProperties() yet. So let's take a look at an example using an object, first, and then using a constructor:
 
-<code>
+<code><pre>
 var creature1 = {
   name: "Shrek",
   skill: "burping",
@@ -65,12 +65,12 @@ var creature2 = Object.create(creature1, {
 
 creature1.brag();   // "My name is Shrek and I am the best at burping!"
 creature2.brag();   // "My name is Donkey and I am the best at talking, and talking, and talking!"
-</code>
+</pre></code>
 
 <p>As you can see, even though we did not define the brag behavior on the creature2, creature2 can still brag. Now let's move on to defining a prototype chain for a our class-like construct. Let's pull in our most sophisticated example from before and enhance it:</p>
 
 
-<code>
+<code><pre>
 function Creature(name, strength) {
   this.name = name || "Unnamed";
   this.strength = 100 || strength;
@@ -120,16 +120,16 @@ donkey.shed();          // "Donkey sheds all over the floor. Ew!");
 donkey.levelup();
 donkey.printInfo();     // "Name: Donkey, Strength: 9011"
 console.log(donkey instanceof Creature); // true
-</code>
+</pre></code>
 
 <p>Okay, let's golf-clap a little bit at our succesfull mission to create some semblance of classes in JavaScript! One nice note is that if you use the instanceof operator on donkey, or any other Furry, it will report true. Let's make one more note before we move on. Note how our constructor is very similar for both classes? If we wanted to call the superclass constructor instead of redfining it, we could use the .call() method like so:</p>
 
-<code>
+<code><pre>
 function Furry(name, strength) {
   // calls Creature() using the enclosing context as the 'this' parameter - yay closure!
   Creature.call(this, name, strength); 
 }
-</code>
+</pre></code>
 
 <p> This same idea can be applied to another other method, including the superclasses prototype chain methods like Object.toString(). This is actaully the only way to access the supertypes method prior to ecmascript6. <em>But wait...</em> what about the data members? So far we've only inherited the methods applied to the prototypes.</p>
 

@@ -1,30 +1,34 @@
-<h1>Motivations</h1>
+<h2>Motivation for Implementing Class-like Behavior in JS</h2>
 <p><abbr>OO</abbr> (Object-Oriented) Programming seems to be around for the long haul. There are some misconceptions about JavaScript that are often overlooked by newcomers to JavaScript and professionals alike. One misconcenption I have heard s that "everything in JavaScript is a class". There's also some confusion about how closures work, hoisting, and a variety of other topics.</p>
 <p>It is very likely that you will find yourself want to use classes in most modern high level languages, especially if you come from another OO language to begin with. When I first picked up a JavaScript book, I was fooled by the familiar (and yet different) syntactical similarities to C and CPP. But you cannot, until recently, just make a class by typing something like this:</p>
-<code>class Shape {
+<code><pre>class Shape {
     var sides;
     var color;
-}</code>
+}</pre></code>
 
 <p>And then instantiate it like we would in another language:</p>
-<code>var redSquare = new Shape;
+<code><pre>var redSquare = new Shape();
 redSquare.sides = 4;
-redSquare.color = red;</code>
+redSquare.color = red;</pre></code>
 
-<p>Things are a lot more convoluted than that! I'm assuming you already know JavaScript's object literal notation, but I'll first show how we'd make a redSquare if we wanted to keep it super simple. Also, we're going to give it a single method that tells us, via the console, what it is:</p>
+<p>Things are a lot more complex than that! I'm assuming you already know JavaScript's object literal notation, but I'll first show how we'd make a redSquare as just a simple object - using object literal notation. Also, we're going to give it a single method that tells us, via the console, what it is:</p>
 
-<code>
-var redSquare = {
+<h4>Example 1:</h4>
+<code><pre>var redSquare = {
   sides: 4,
-  color: red,
+  color: "red",
   identity: function() {
     console.log(this.sides + " sided " + this.color + " shape.");
   }
-};</code>
+};
+
+redSquare.identity(); // 4 sided red shape.</code></pre>
 
 <p>We'd like to create a class though! That's just asingle object and does not help us a lot. We'd like, ultimately, a function that returns an object using JavaScript, because we actually want to be able to pass in some arguments to a constructor of some sort. In C++/Java/C#, we would call such a thing a constructor. By convention, it should have a capital letter to indicate to the user that this is a constructor method. As a reminder, data properties on a JavaScript object are non-function properties. Accessor properties are properties defined as a function that lets us <em>access</em> the data members of the object. Let's go ahead and introduce some syntax you may not even know exists: get and set. We're also going to try and "privatize" our data members so that we must access them through a public interface. Note the leading _underscore now:</p>
 
-<code>
+<h4>Example 2</h4>
+<code><pre>"use strict";
+
 var redSquare = {
   // _sides isn't technically private, we're just defining public get/set methods
   _sides: 4,
@@ -35,7 +39,7 @@ var redSquare = {
   set sides(numSides) {
     console.log("Setting sides to %s", numSides);
       this._sides = numSides;
-  }
+  },
   _color: "red",
   get color() {
     console.log("Reading color");
@@ -44,11 +48,20 @@ var redSquare = {
   set color(newColor) {
     console.log("Setting color to %s", newColor);
     this._color = newColor;
-  }
+  },
   
   identity: function() {
-    console.log(sides() + " sided " + color() + " shape.");
+    console.log(this.sides + " sided " + this.color + " shape.");
   }
-};</code>
+};
 
-<p>Now you could write redSquare.color and retreview the color, redSquare.color("blue") to change it, etc. Note two things: We do not use parenthesis to call the getter, we just call the . (dot) notation. The setter </p>
+redSquare.identity();  // Reading sides --> Reading color --> 4 sided red shape
+// Make our red square not so red or square. 
+redSquare.sides = 5; // Setting sides to 5
+redSquare.color = "blue"; // Setting color to blue
+// Doesn't accomplish much except logging in this case!
+redSquare.identity(); // Reading sides --> REading color --> 5 sided blue shape.</pre></code>
+
+<p>As you can see, when we try to write to sides, the set sides() function is called. When we try to read from it - even from within the object, as in identity() - then the get sides() function is called. This is actually really powerful. </p>
+
+<p>But we want to do more. We only have a single object, not a class. Let's <a href="?page=2">continue by examining the various attributes we can set for the properties on our objects.</a></p>

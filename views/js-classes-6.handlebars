@@ -5,7 +5,7 @@
 
 <p>Let's start with an example. Note that there is a similar pattern for a singleton object (The module pattern and the "revealing" module pattern). I'm going to focus on the constructor/class-like pattern. Let's make our 'privatize' our creature class from before. The key concept with this pattern is that we first define some private variables. We're going to modify some of our design decisions a bit here, too. If we want private data accessible through a public method, we have to store the related functions on the object itself, rather than on the prototype. </p>
 
-<code>
+<code><pre>
 function Creature(name, str) {
   var strength  = str || 100;   // this will be captured inside our closure
   this.name = name || "Unnamed";
@@ -52,7 +52,7 @@ ogre.name = "Bob"; // Doesn't work!
 console.log(ogre.getStrength()); // 100
 ogre.levelUp();
 ogre.printInfo(); // "Name: Shrek, Strength: 110"
-</code>
+</pre></code>
 
 <p>Whew. Nothing crazy here. The biggest thing to note is that we declare stength as a variable, instead of contextually applying it as a property that's attached to the local this parameter inside of Creature. What does that mean? Well, normally strength would fall out of scope. But because of closure, Creature can still see the strength variable. And the functions on it can likewise see it. This is just good old closure being applied for our purposes. </p>
 

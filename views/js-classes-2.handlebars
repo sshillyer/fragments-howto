@@ -1,16 +1,30 @@
 <h1>Attributes: Building Towards Class-like Behavior</h1>
 <p>First, let's demonstrate how to emulate a behavior we sometimes see with a class - a constant data member, that is. In JavaScript, these are called non-Writable objects. To achieve this, we can ues the defineProperty() method of the JavaScript Object object:</p>
 
-<code>Object.defineProperty(square, "color", {
+<h4>Example 3</h4>
+<code><pre>// If we use strict, assigning to square.color after making writable 
+// false throw an error instead of failing silently
+// "use strict";   // remove the comment here to try that out
+
+var square = {
+    color: "pink",
+};
+console.log(square.color); // pink
+square.color = "red";
+
+Object.defineProperty(square, "color", {
   writable: false
 });
-</code>
+
+console.log(square.color); // red
+square.color = "green";
+console.log(square.color); // red</pre></code>
 
 The first argument is the object we are defining a property on. The second argument is the property we are defining. The third property is an object-literal which lists the various attributes we are defining. Some of the other attributes we can define for a property using htis same method include:
 
 <dl>
 <dt>enumerable</dt>
-<dd>Data and Accessor attribute: true or false. Enumerable sets whether or not you can iterate over the properties in a for-in loop. A loop that starts with <code>for (property in object) {</code> would only work on property members with this attribute set to true.</dd>
+<dd>Data and Accessor attribute: true or false. Enumerable sets whether or not you can iterate over the properties in a for-in loop. A loop that starts with <code>for (property in object) {</pre></code> would only work on property members with this attribute set to true.</dd>
 
 <dt>configurable</dt>
 <dd>Data and Accessor attribute: true or false. Set to false to prevent future configurations to the property. Locks down the property from being deleted!</dd>
@@ -32,49 +46,53 @@ The first argument is the object we are defining a property on. The second argum
 <h2>Using these attributes</h2>
 <h3>enumerable</h3>
 <p>You can get all of an objects enumerable properties <em>keys</em> by calling Object.keys() on the object and storing it in a variable:</p>
-<code>var properties = Object.keys(object);</code>
+<code>var properties = Object.keys(object);</pre></code>
 
 <p>So if you wanted to "hide" the key for some design related decision, that is where you would go.</p>
 
 <h3>configurable</h3>
-<p>Normally (by default) you can delete a property on an object at whim by calling <code>delete obj.propName;</code>. To disable such tomfoolery, just set configurable to false for that property:
+<p>Normally (by default) you can delete a property on an object at whim by calling <code>delete obj.propName;</pre></code>. To disable such tomfoolery, just set configurable to false for that property:
 
-<code>Object.defineProperty(shape, "color", {
-  configurable: false;
-});
+<h4>Example 4</h4>
+<code><pre>var shape = {
+    color: "red"
+}
+console.log(shape.hasOwnProperty("color")); // true
 
-delete shape.color; // Does NOT work!
 Object.defineProperty(shape, "color", {
-  configurable: true;  // Does NOT work!
+    configurable: false
 });
 
-</code>
+delete shape.color; // Throws an error
 
-<p>So if you wanted to ensure an object's property cannot be override, deleted, or otherwise have its attributes modified, this is the attribute to update..</p>
+// Throws an error. Cannot turn configurable back on - locks down all attributes
+Object.defineProperty(shape, "color", {
+    configurable: true 
+});</pre></code>
+
+<p>So if you wanted to ensure an object's property cannot be override, deleted, or otherwise have its attributes modified, this is the attribute to update. The above code will only run if you comment out the statements after the configurabe: false is set, or if you change that value to true.</p>
 
 <h3>value and writable</h3>
 <p>The best way to understand this is by a simple example. If we define a simple property like "color" on a shape using <code>var shape = { color: "red" }; </code>, then it's the same as this code:</p>
 
-
-<code>
-var shape = {};
+<h4>Snippet</h4>
+<code><pre>var shape = {};
 
 Object.defineProperty(shape, "color", {
   value: "red",
   enumerable: true,    // default: true
   configurable: true,  // default: true
   writable: true       // default: true
-});
-</code>
+});</pre></code>
 
 <h3>get and set</h3>
-<p>This is similar to what we saw on the previous page. Basically, the reason you'd use this is if you already defined an object using object literal notation but need to define the property for the object later. Borrowing an example from page 43 of <cite>The Principles of Object-Oriented JavaScript"<cite>:
+<p>This is similar to what we saw on the previous page. Basically, the reason you'd use this is if you already defined an object using object literal notation but need to define the property for the object later. Borrowing an example from page 43 of <cite>The Principles of Object-Oriented JavaScript"</cite>:
 
-<code>
-var person1 = {
+<code><pre>var person1 = {
   _name: "Nicholas"
 };
 
+// This is one use-case for defineProperty -- we'll see more later
 Object.defineProperty(person1, "name", {
   get: function() {
     console.log("Reading name");
@@ -86,7 +104,6 @@ Object.defineProperty(person1, "name", {
   },
   enumerable: true,
   configurable: true
-});
-</code>
+});</pre></code>
 
 <p>Continue to the next page to see how we can start putting this all together</p>
