@@ -1,0 +1,14 @@
+<h1>Further Study Topics and ECMAScript6</h1>
+<p>I'm going to end my tutorial there, but let's discuss a few other strategies employed to achieve inheritance in JavaScript. Consider these further research topics if you're interested.</p>
+<dl>
+<dt>Mixins</dt>
+<dd>One object acquires the properties of another by copying the properties (specifically, the hasOwnProperty(someProp)==true properties). Typically a shallow copy so objects will only be references, not deep copies, in the receiving object.</dd>
+
+<dt>Scope-Safe Constructors</dt>
+<dd>Conditional handling in a constructor - say, MyType - that checks if it was called with 'new' or not by checking if (this instanceof MyType). If not, you can typically use else clause to just recurisvely call MyType with the new keyword. There are other usecases for this kind of logic as well.</dd>
+
+<dt>ECMAScript 6</dt>
+<dd>ES6 has added a lot of syntatic sugar to support some behavior that we explored in this tutorial. There are guides that review ES6 online such as <a href="https://github.com/lukehoban/es6features">this one from Luke Hoban</a>. I forego explaining their use here as the sugar takes away a lot of our learning here, and other resources cover it succinctly (because it's quite decent at abstracting away)</dd>
+</dl>
+
+<p>If you'd like one more concrete example of classes, I encourage you to go to the final page and explore the code there!</p>

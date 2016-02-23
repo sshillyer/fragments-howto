@@ -1,0 +1,59 @@
+<h1>Multiple Methods, one .prototype</h1>
+<p>You can save a lot of typing and make your classes more readable by following this pattern below, which I describe afterwards in more detail. Note that I've cut back on some of our Creature functionality to illustrate the pattern and added some new methods. Once we get towards the end of this tutorial we will tie it back together as one cohesive unit.</p>
+
+<code>
+function Creature(name, strength) {
+  this.name = name || "Unnamed";
+  this.strength = 100 || strength;
+}
+
+// Note: We're using object literal notation to define multiple prototype methods
+Creature.prototype = {
+  constructor: Creature,    // Without this, constructor would be set to Object instead of Creature
+
+  battleCry: function() {
+    console.log(this.name + " will crush you!");
+  },
+
+  printInfo: function() {
+    console.log("Name: " + this.name +", Strength: " + this.strength);
+  },
+
+  levelUp: function() {
+    this.strength += 10;
+  }
+};
+
+var ogre = new Creature("Shrek", 110);
+ogre.battleCry();  // "Shrek will crush you!"
+ogre.printInfo(); // "Name: Shrek, Strength: 150"
+ogre.levelUp();
+ogre.printInfo(); // "Name: Shrek, Strength: 160"
+</code>
+
+<p>Okay, so now we have a pretty solid foundation for class-like behavior! The big addition here is that we've defined multiple properties on the Creature.prototype by using an object literal. This is almost like typing Creature.prototype.battleCry = function() { ..., Creature.prototype.printInfo() { ..., etc.</p>
+
+<p>The problem (which we overcome by typing constructor: Creature) with object literal notation is that each of those functions is created by Object rather than by Creature. So we need to tell the Creature.prototype that its constructor should point to Creature: </p>
+
+<code>
+console.log(ogre.constructor === Creature); // true.. good!
+</code>
+
+<p>But if we omitted the constructor: Creature property in our object-literal, this would return false. </p>
+
+<h2>Behind the Scenes</h2>
+<p>You may not be familiar with this concept of prototypes. If not, I suggest doing some research online or consulting a text on JavaScript to get the fully story. In short, each instance of Creature has an implicit property called [[Prototype]] that is a pointer to Creature.prototype. Creature.prototype.constructor in term points to the function that constructs creatres... in this case, Creature, our constructor! Interestingly, this is a circular reference. Creature has a prototype property that in turn points to Creature.prototype. <p>
+
+<p>One implication of this is that you can, at any time, add new properties to the Creature.prototype at any time and <em>all instances</em> of Creature will then have access to the new property. We're typically using this to add methods, of course. So we could easily just add a new method later on (after instantiation) like this: </p>
+
+<code>
+Creature.prototype.rest = function() {
+  console.log(this.name + " sits down and rests a while.");
+}
+
+ogre.rest(); // "Shrek sits down and rests a while."
+</code>
+
+<p>When we call .rest() on the ogre, the JavaScript engine will check the ogre object for the rest property and, not finding it, refer to its prototype, Creature.prototype, and finds the property. The use cases for this behavior are not explicitly obvious - one reason you might do this is if you are distributing some kind of library that exports an object and the user wants to extend your library without modifying the original source. They might import the module and then extend its prototype with additional methods so that they can act on your module without having to do true inheritance.<p>
+
+<p>Continue reading to discover how JavaScript can create a form of inheritance using Prototype Chaining</p>

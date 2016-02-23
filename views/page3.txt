@@ -1,0 +1,94 @@
+<h1>Approaching a Class</h1>
+<p>We are going to put away our 'toy' code example of a shape and start using a more interesting example. We'll make a class of Creatures which we will later try to use in an inheritance structure. First, let's make a constructor. A constructor in JS is just a function that we call with new to get an object back as an implicit return value:</p>
+
+<code>function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
+  this.name = name || "Unnamed";
+  this.strength = strength || 10;
+  this.hitpoints = health || 100;
+
+  this.printInfo = function() {
+    console.log("Name: " + this.name + "\n"
+               +"Strength: " + this.strength + "\n"
+               +"Hitpoints: " + this.hitpoints);
+  } 
+}
+
+
+var goblin1 = new Creature;   // if not passing arguments, () not needed
+var goblin2 = new Creature(); // same as agove
+var goblin3 = new Creature("Dobby", 15); 
+</code>
+
+<p> Note that we've also introduced the concept of default values. In JavaScript, we cannot overload functions by using multiple signatures as we can in C++/Java/etc. Recall that JavaScript lets us call functions with as many or as few arguments as possible. Extraneous ones are ignored; missing ones we must handle ourselves. In this case, if the arguments are not passed in, we simply assign default values instead. This is almost as though we have a variety of default constructors. However, we must realize that, just like in other languages, if we pass in any arguments, they will be assigned in the order they appear in our function signature, so only the trailing arguments will pick up default values. We cannot, for example, only pass in the health and expect the name and strength to be assigned the defaults. Instead, name would end up having some value - likely an integer - and strength and hitpoints would be assigned their defaults.</p>
+
+<p>Also of important note is that the new operator causes an implied object to be returned. The contextual <em>this</em> references are associated with the object that is returned.</p>
+
+
+<h2>Using Attributes with Constructors</h2>
+<p>But what about the property attributes we discussed on the previous page? We can use the same style of code, instead passing in <em>this</em> as the object argument to defineProperty method. In this next snippet, note that we set four properties in one call: get, set, enumerable and configurable properties are all explicitly set for the properties.<p>
+
+
+<code>function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
+  // Define "name" property and give it a default value
+  Object.defineProperty(this, "name", {
+    get: function() {
+      return name;
+    },
+    set: function(newName) {
+      name = newName;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  
+  this.name = name || "Unnamed";  // does this work still??
+
+  // Repeat for strength
+  Object.defineProperty(this, "strength", {
+    get: function() {
+      return strength;
+    },
+    set: function(newStrength) {
+      strength = newStrength;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  this.strength = strength || 10; // does this work still??
+
+  
+  // ... etc ...
+ 
+  // Uh oh... every time we call new Creature(), another instance of this function is created!
+  this.printInfo = function() {
+    console.log("Name: " + this.name + "\n"
+               +"Strength: " + this.strength + "\n"
+               +"Hitpoints: " + this.hitpoints);
+  } 
+}
+
+
+var goblin1 = new Creature;   // if not passing arguments, () not needed
+var goblin2 = new Creature(); // same as agove
+var goblin3 = new Creature("Dobby", 15); 
+</code>
+
+<p>So nothing particularly new here, but there are some problems. Every time you call new Creature, another copy of the function printInfo is created and defined. A better solution is to put our methods as a member of the object's prototype. Backing up a bit to simplify the example, we could do this: </p>
+
+<code>
+function Creature(name) {
+  this.name = name || "Unnamed";
+}
+
+Creature.prototype.printInfo = function() {
+  console.log("Name: " + this.name);
+}
+
+var goblin = new Creature("Dobby");
+goblin.printInfo(); // -->  Name: "Dobby"
+
+</code>
+
+<p>What's going on here? When you call goblin.printInfo(), JavaScript first checks if goblin has a property or method called printInfo(). Finding none, it goes up the prototype chain and checks Creature.prototype for a printInfo property and finds one - the one we just defined! This is great news. Now  we have just one copy of the function. A warning: Do not store data members unless you want that data member to be a "static", class-wide data member that is updated for all instances of that class each time it is changed!<p>
+
+<p>Continue reading to see how we pull this together into a cohesive Creature class.</p>
