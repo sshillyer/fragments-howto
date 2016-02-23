@@ -1,4 +1,4 @@
-// Example2.js
+// example2.js
 
 "use strict";
 
@@ -33,4 +33,4 @@ redSquare.identity();  // Reading sides --> Reading color --> 4 sided red shape
 redSquare.sides = 5; // Setting sides to 5
 redSquare.color = "blue"; // Setting color to blue
 // Doesn't accomplish much except logging in this case!
-redSquare.identity(); // Reading sides --> REading color --> 5 sided blue shape.
+redSquare.identity(); // Reading sides --> Reading color --> 5 sided blue shape.

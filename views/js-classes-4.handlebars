@@ -1,6 +1,7 @@
 <h2 class="page-header">Using Constructors</h2>
 <p>We are going to put away our shape code example in favor of something more interesting - Creatures! We'll make a class of Creatures which we will later try use in an inheritance structure, fleshing it out with private data members.</p> <p>First, let's make a constructor. A constructor in JS is just any function that we call with new to get an object back as an implicit return value. The function <em>becomes</em> a constructor because we call the function with the <code>new</code> keyword. The object returned has everything bound in its lexical scope bound to it.</p>
 
+<h4><a href="examples/example7.js">Example 7 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   this.name = name || "Unnamed";
   this.strength = strength || 10;
@@ -31,7 +32,7 @@ var goblin3 = new Creature("Dobby", 15);
 <h2>Attributes and Constructors</h2>
 <p>But what about the property attributes we discussed on the previous page - how do they relate? We can use the same style of code we used to define a property, instead passing in <em>this</em> as the object argument to <code>defineProperty()</code> method. In this next snippet, note that we set the attributes for each property in each call: get, set, enumerable and configurable properties are all explicitly set using object literal syntax.<p>
 
-<h4>Example (NUMBERHERE)</h4>
+<h4><a href="examples/example8.js">Example 8 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   // Define "name" property and give it a default value
   Object.defineProperty(this, "name", {
@@ -83,6 +84,7 @@ var goblin3 = new Creature("Dobby", 15);
 <p>So nothing particularly crazy here, but there are some concerns we should address before proceeding. Every time you call <code>new Creature</code>, another copy of the function printInfo is created and defined. This will be the case for any object where we define a function as a property and have it returned like so. </p>
 <p>The solution is to put our methods as a member of the object's <em>prototype</em>. Backing up on the complexity a bit to simplify the example, we could do this: </p>
 
+<h4><a href="examples/example9.js">Example 9 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 function Creature(name) {
   this.name = name || "Unnamed";

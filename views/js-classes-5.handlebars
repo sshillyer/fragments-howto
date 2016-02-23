@@ -4,6 +4,7 @@
 <h3>Object-Literal Notation for Prototype Properties</h3>
 <p>You can save a lot of typing and make your classes more readable by following this pattern below, which I describe afterwards in more detail. Note that I've cut back on some of our Creature functionality to illustrate the pattern and added some new methods.</p>
 
+<h4><a href="examples/example10.js">Example 10 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 function Creature(name, strength) {
   this.name = name || "Unnamed";
@@ -50,6 +51,7 @@ console.log(ogre.constructor === Creature); // true.. good!
 
 <p>The key implication of this is that you can, at any time, add new properties to the Creature.prototype at any time and <em>all instances</em> of Creature will then have access to the new property. We're typically using this to add methods, of course. So we could easily just add a new method later on (after instantiation) like this: </p>
 
+<h4><a href="examples/example11.js">Example 11 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 Creature.prototype.rest = function() {
   console.log(this.name + " sits down and rests a while.");

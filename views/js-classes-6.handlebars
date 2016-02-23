@@ -27,6 +27,7 @@
 
 
 <h2>Creating the Chain</h2>
+
 <p>Okay, all of that is great, but how do we make an object actually inherit the behaviors from another Object? Prototypical inheritance (just a term that describes what prototype chaining is doing) can be achieved using Object.create(). The syntax is quite easy. You pass in two arguments:
 
 <ol>
@@ -36,6 +37,7 @@
 
 <p>We didn't touch on .defineProperties() yet. So let's take a look at an example using an object, first, and then using a constructor:
 
+<h4><a href="examples/example12.js">Example 12 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 var creature1 = {
   name: "Shrek",
@@ -69,7 +71,7 @@ creature2.brag();   // "My name is Donkey and I am the best at talking, and talk
 
 <p>As you can see, even though we did not define the brag behavior on the creature2, creature2 can still brag. Now let's move on to defining a prototype chain for a our class-like construct. Let's pull in our most sophisticated example from before and enhance it:</p>
 
-
+<h4><a href="examples/example13.js">Example 13 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 function Creature(name, strength) {
   this.name = name || "Unnamed";
@@ -124,7 +126,7 @@ console.log(donkey instanceof Creature); // true
 
 <p>Okay, let's golf-clap a little bit at our succesfull mission to create some semblance of classes in JavaScript! One nice note is that if you use the instanceof operator on donkey, or any other Furry, it will report true. Let's make one more note before we move on. Note how our constructor is very similar for both classes? If we wanted to call the superclass constructor instead of redfining it, we could use the .call() method like so:</p>
 
-<pre class="prettyprint linenums">
+<pre class="prettyprint">
 function Furry(name, strength) {
   // calls Creature() using the enclosing context as the 'this' parameter - yay closure!
   Creature.call(this, name, strength); 

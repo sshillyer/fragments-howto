@@ -1,4 +1,4 @@
-// Example4.js
+// example4.js
 
 var shape = {
     color: "red"

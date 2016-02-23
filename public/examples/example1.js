@@ -1,4 +1,4 @@
-// Example1.js
+// example1.js
 
 var redSquare = {
   sides: 4,

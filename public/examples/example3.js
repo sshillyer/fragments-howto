@@ -1,4 +1,4 @@
-// Example5.js
+// example3.js
 
 // If we use strict, assigning to square.color after making writable 
 // false throw an error instead of failing silently

@@ -5,6 +5,7 @@
 
 <p>Let's start with an example. Note that there is a similar pattern for a singleton object (The module pattern and the "revealing" module pattern). I'm going to focus on the constructor/class-like pattern. Let's make our 'privatize' our creature class from before. The key concept with this pattern is that we first define some private variables. We're going to modify some of our design decisions a bit here, too. If we want private data accessible through a public method, we have to store the related functions on the object itself, rather than on the prototype. </p>
 
+<h4><a href="examples/example14.js">Example 14 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
 function Creature(name, str) {
   var strength  = str || 100;   // this will be captured inside our closure
