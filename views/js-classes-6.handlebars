@@ -36,7 +36,7 @@
 
 <p>We didn't touch on .defineProperties() yet. So let's take a look at an example using an object, first, and then using a constructor:
 
-<pre class="prettyprint linenums"><pre>
+<pre class="prettyprint linenums">
 var creature1 = {
   name: "Shrek",
   skill: "burping",
@@ -65,7 +65,7 @@ var creature2 = Object.create(creature1, {
 
 creature1.brag();   // "My name is Shrek and I am the best at burping!"
 creature2.brag();   // "My name is Donkey and I am the best at talking, and talking, and talking!"
-</pre></code>
+</pre>
 
 <p>As you can see, even though we did not define the brag behavior on the creature2, creature2 can still brag. Now let's move on to defining a prototype chain for a our class-like construct. Let's pull in our most sophisticated example from before and enhance it:</p>
 

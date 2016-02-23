@@ -68,11 +68,13 @@ app.get('/', function(req,res){
             var nextPage = Number(pageNum) + 1;
             context.prevPage = prevPage >= 0 ? prevPage : 0;
             context.nextPage = nextPage <= MAX_PAGE ? nextPage : 0;
+            context.curPage = pageNum;
         }
         else {
             pageTitle = "js-classes-1";
             context.prevPage = 0;
             context.nextPage = 2;
+            context.curPage = 1;
         }
     }
     

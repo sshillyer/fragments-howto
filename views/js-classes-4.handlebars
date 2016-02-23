@@ -1,5 +1,5 @@
 <h2 class="page-header">Using Constructors</h2>
-<p>We are going to put away our 'toy' code example of a shape and start using a more interesting example. We'll make a class of Creatures which we will later try to use in an inheritance structure. First, let's make a constructor. A constructor in JS is just a function that we call with new to get an object back as an implicit return value:</p>
+<p>We are going to put away our shape code example in favor of something more interesting - Creatures! We'll make a class of Creatures which we will later try use in an inheritance structure, fleshing it out with private data members.</p> <p>First, let's make a constructor. A constructor in JS is just any function that we call with new to get an object back as an implicit return value. The function <em>becomes</em> a constructor because we call the function with the <code>new</code> keyword. The object returned has everything bound in its lexical scope bound to it.</p>
 
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   this.name = name || "Unnamed";
@@ -19,15 +19,19 @@ var goblin2 = new Creature(); // same as agove
 var goblin3 = new Creature("Dobby", 15); 
 </pre>
 
-<p> Note that we've also introduced the concept of default values. In JavaScript, we cannot overload functions by using multiple signatures as we can in C++/Java/etc. Recall that JavaScript lets us call functions with as many or as few arguments as possible. Extraneous ones are ignored; missing ones we must handle ourselves. In this case, if the arguments are not passed in, we simply assign default values instead. This is almost as though we have a variety of default constructors. However, we must realize that, just like in other languages, if we pass in any arguments, they will be assigned in the order they appear in our function signature, so only the trailing arguments will pick up default values. We cannot, for example, only pass in the health and expect the name and strength to be assigned the defaults. Instead, name would end up having some value - likely an integer - and strength and hitpoints would be assigned their defaults.</p>
+<p>On line 1, we've denoted to other users that this function should be treated as a constructor. There is a pattern in JavaScript that can be used to enforce that a call to Creature returns an object which we will touch on later. For now, notice that this function does not look any different from any other function you've written. It also does not explicitly return the object, although you can do so. As we'll see later, returning a specific object from a function can be used for encapsulation purposes.</p>
+<p>In other high-level object-oriented languages, we often have what are termed "default constructors" that are called when no arguments are passed to the constructor. JavaScript, until recently, did not support default values for parameters, so I'm illustrating how we can set default values using the <code>||</code> operator.</p>
+<p>Also, recall that JavaScript lets us call functions with as many or as few arguments as we would like. Extraneous ones are ignored; missing ones we must handle ourselves. In this case, if the arguments are not passed in, we simply assign default values instead. The statement on line 3, for example, will see that <code>strength</code> is undefined and evaluate to false. Then 10 is evaluated. The return value of a conditional 'or' statement is the first of the two values to return true (in this case).</p>
 
-<p>Also of important note is that the new operator causes an implied object to be returned. The contextual <em>this</em> references are associated with the object that is returned.</p>
+<p>This allows us to provide an interface that sets default values for multiple parameters. However, we must realize that, just like in other languages, if we pass in any arguments, they will be assigned in the order they appear in our function signature, so only the trailing arguments will pick up default values. We cannot, for example, only pass in the health and expect the name and strength to be assigned the defaults. Instead, name would end up having some value - likely an integer - and strength and hitpoints would be assigned their defaults.</p>
+
+<p>As mentioned before, it's important to note that the new operator causes an implied object to be returned. The contextual <em>this</em> object is being appended with a variety of properties, and these are associated with the object that is returned. We will see later that, through closure, we can hide data members and even create private methods.</p>
 
 
-<h2>Using Attributes with Constructors</h2>
-<p>But what about the property attributes we discussed on the previous page? We can use the same style of code, instead passing in <em>this</em> as the object argument to defineProperty method. In this next snippet, note that we set four properties in one call: get, set, enumerable and configurable properties are all explicitly set for the properties.<p>
+<h2>Attributes and Constructors</h2>
+<p>But what about the property attributes we discussed on the previous page - how do they relate? We can use the same style of code we used to define a property, instead passing in <em>this</em> as the object argument to <code>defineProperty()</code> method. In this next snippet, note that we set the attributes for each property in each call: get, set, enumerable and configurable properties are all explicitly set using object literal syntax.<p>
 
-
+<h4>Example (NUMBERHERE)</h4>
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   // Define "name" property and give it a default value
   Object.defineProperty(this, "name", {
@@ -73,7 +77,11 @@ var goblin2 = new Creature(); // same as agove
 var goblin3 = new Creature("Dobby", 15); 
 </pre>
 
-<p>So nothing particularly new here, but there are some problems. Every time you call new Creature, another copy of the function printInfo is created and defined. A better solution is to put our methods as a member of the object's prototype. Backing up a bit to simplify the example, we could do this: </p>
+<p>Each goblin we instantiate gets its own local property defined. This syntax, so far, has mostly allowed us to set up the attributes we discussed in the context of a constructor.</p>
+
+<h3>Some Concerns</h3>
+<p>So nothing particularly crazy here, but there are some concerns we should address before proceeding. Every time you call <code>new Creature</code>, another copy of the function printInfo is created and defined. This will be the case for any object where we define a function as a property and have it returned like so. </p>
+<p>The solution is to put our methods as a member of the object's <em>prototype</em>. Backing up on the complexity a bit to simplify the example, we could do this: </p>
 
 <pre class="prettyprint linenums">
 function Creature(name) {
@@ -89,6 +97,13 @@ goblin.printInfo(); // -->  Name: "Dobby"
 
 </pre>
 
-<p>What's going on here? When you call goblin.printInfo(), JavaScript first checks if goblin has a property or method called printInfo(). Finding none, it goes up the prototype chain and checks Creature.prototype for a printInfo property and finds one - the one we just defined! This is great news. Now  we have just one copy of the function. A warning: Do not store data members unless you want that data member to be a "static", class-wide data member that is updated for all instances of that class each time it is changed!<p>
+<h3>Touching on Prototypes</h3>
+<p>What's going on here? Instead of giving every instance of the Creature objects their own complete copy of the function, we're actually giving the function to their prototype. You can think of the Prototype as a superclass in other languages like Java and C++.</p>
+
+<p>When you call goblin.printInfo(), JavaScript first checks if goblin has a property - whether its a data member or a function - called printInfo. (Side note: we can manually check this with <code>goblin.hasOwnProperty("printInfo")</code>). Finding none, it goes <em>up the prototype chain</em> and checks Creature.prototype for a printInfo property and finds one - the one we just defined!</p>
+
+<p>This is great news. Now  we have just one copy of the function for all objects! Also, if we make a change to that function on the prototype, it will effect every other object with that prototype. Hopefully you'll recall that every object, by default, has a prototype chain that goes up to the Object.prototype.</p>
+    
+<p>A warning: Do not store <em>data</em> members on an object's prototype unless you want those data members to be a "static", class-wide data members that are updated for all instances of that class each time it is changed!</p>
 
 <p>Continue reading to see how we pull this together into a cohesive Creature class.</p>
