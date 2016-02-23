@@ -3,7 +3,8 @@ Author:         Shawn Hillyer
 Description:    CS290 Assignment "How To Guide"
 Date;           2/22/2016
 *********************************************************/
-
+"use strict";
+var MAX_PAGE = 8; // Set to the highest page in guide
 /*******************
 * Setup middleware *
 ********************/
@@ -51,6 +52,7 @@ app.use(express.static(__dirname + '/public')); // tells express where to go for
 // Main index page
 app.get('/', function(req,res){
     var context = {};
+    var pages = [];
     var queryData = [];
     // Grab the page number from the request object if a page number was sent
     if (req.query != "undefined") {
@@ -59,14 +61,21 @@ app.get('/', function(req,res){
             getRequest.push( req.query[key] );
         }
         console.log(getRequest);
-        if (getRequest.length > 0) {
+        if (getRequest.length > 0 && getRequest[0] != 0) {
             var pageNum = getRequest[0];
-            var pageTitle = "js-classes-" + pageNum;
+            var pageTitle = "js-classes-" + Number(pageNum);
+            var prevPage = Number(pageNum) - 1;
+            var nextPage = Number(pageNum) + 1;
+            context.prevPage = prevPage >= 0 ? prevPage : 0;
+            context.nextPage = nextPage <= MAX_PAGE ? nextPage : 0;
         }
         else {
-            pageTitle = "introduction";
+            pageTitle = "js-classes-1";
+            context.prevPage = 0;
+            context.nextPage = 2;
         }
     }
+    
     res.render(pageTitle, context);
 });
 

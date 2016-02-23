@@ -1,94 +1,109 @@
-<h1>Approaching a Class</h1>
-<p>We are going to put away our 'toy' code example of a shape and start using a more interesting example. We'll make a class of Creatures which we will later try to use in an inheritance structure. First, let's make a constructor. A constructor in JS is just a function that we call with new to get an object back as an implicit return value:</p>
+<h2 class="page-header">Attributes: Building Towards Class-like Behavior</h2>
+<p>First, let's demonstrate how to emulate a behavior we sometimes see with a class - a constant data member, that is. In JavaScript, these are called non-Writable objects. To achieve this, we can ues the defineProperty() method of the JavaScript Object object:</p>
 
-<code><pre>function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
-  this.name = name || "Unnamed";
-  this.strength = strength || 10;
-  this.hitpoints = health || 100;
+<h4>Example 3</h4>
+<pre class="prettyprint linenums">// If we use strict, assigning to square.color after making writable 
+// false throw an error instead of failing silently
+// "use strict";   // remove the comment here to try that out
 
-  this.printInfo = function() {
-    console.log("Name: " + this.name + "\n"
-               +"Strength: " + this.strength + "\n"
-               +"Hitpoints: " + this.hitpoints);
-  } 
+var square = {
+    color: "pink",
+};
+console.log(square.color); // pink
+square.color = "red";
+
+Object.defineProperty(square, "color", {
+  writable: false
+});
+
+console.log(square.color); // red
+square.color = "green";
+console.log(square.color); // red</pre>
+
+The first argument is the object we are defining a property on. The second argument is the property we are defining. The third property is an object-literal which lists the various attributes we are defining. Some of the other attributes we can define for a property using htis same method include:
+
+<dl>
+<dt>enumerable</dt>
+<dd>Data and Accessor attribute: true or false. Enumerable sets whether or not you can iterate over the properties in a for-in loop. A loop that starts with <code class="prettyprint">for (property in object) {</code> would only work on property members with this attribute set to true.</dd>
+
+<dt>configurable</dt>
+<dd>Data and Accessor attribute: true or false. Set to false to prevent future configurations to the property. Locks down the property from being deleted!</dd>
+
+<dt>value</dt>
+<dd>Data attribute: any value you'd normally define using a 'var =' type statement.</dd>
+
+<dt>writable</dt>
+<dd>Data attribute: determines if you can write to the property. JavaScript's version of "const" (C++) / "final" (Java).</dd>
+
+<dt>get</dt>
+<dd>Accessor attribute: function.</dd>
+
+<dt>set</dt>
+<dd>Accessor attribute: function.</dd>
+
+</dl>
+
+<h2>Using these attributes</h2>
+<h3>enumerable</h4>
+<p>You can get all of an objects enumerable properties <em>keys</em> by calling Object.keys() on the object and storing it in a variable:</p>
+<pre class="prettyprint">var properties = Object.keys(object);</pre>
+
+<p>So if you wanted to "hide" the key for some design related decision, that is where you would go.</p>
+
+<h3>configurable</h3>
+<p>Normally (by default) you can delete a property on an object at whim by calling <code class="prettyprint">delete obj.propName;</code>. To disable such tomfoolery, just set configurable to false for that property:
+
+<h4>Example 4</h4>
+<pre class="prettyprint linenums">var shape = {
+    color: "red"
 }
+console.log(shape.hasOwnProperty("color")); // true
 
+Object.defineProperty(shape, "color", {
+    configurable: false
+});
 
-var goblin1 = new Creature;   // if not passing arguments, () not needed
-var goblin2 = new Creature(); // same as agove
-var goblin3 = new Creature("Dobby", 15); 
-</pre></code>
+delete shape.color; // Throws an error
 
-<p> Note that we've also introduced the concept of default values. In JavaScript, we cannot overload functions by using multiple signatures as we can in C++/Java/etc. Recall that JavaScript lets us call functions with as many or as few arguments as possible. Extraneous ones are ignored; missing ones we must handle ourselves. In this case, if the arguments are not passed in, we simply assign default values instead. This is almost as though we have a variety of default constructors. However, we must realize that, just like in other languages, if we pass in any arguments, they will be assigned in the order they appear in our function signature, so only the trailing arguments will pick up default values. We cannot, for example, only pass in the health and expect the name and strength to be assigned the defaults. Instead, name would end up having some value - likely an integer - and strength and hitpoints would be assigned their defaults.</p>
+// Throws an error. Cannot turn configurable back on - locks down all attributes
+Object.defineProperty(shape, "color", {
+    configurable: true 
+});</pre>
 
-<p>Also of important note is that the new operator causes an implied object to be returned. The contextual <em>this</em> references are associated with the object that is returned.</p>
+<p>So if you wanted to ensure an object's property cannot be override, deleted, or otherwise have its attributes modified, this is the attribute to update. The above code will only run if you comment out the statements after the configurabe: false is set, or if you change that value to true.</p>
 
+<h3>value and writable</h3>
+<p>The best way to understand this is by a simple example. If we define a simple property like "color" on a shape using <code class="prettyprint">var shape = { color: "red" };</code> , then it's the same as this code:</p>
 
-<h2>Using Attributes with Constructors</h2>
-<p>But what about the property attributes we discussed on the previous page? We can use the same style of code, instead passing in <em>this</em> as the object argument to defineProperty method. In this next snippet, note that we set four properties in one call: get, set, enumerable and configurable properties are all explicitly set for the properties.<p>
+<h4>Snippet</h4>
+<pre class="prettyprint linenums">var shape = {};
 
+Object.defineProperty(shape, "color", {
+  value: "red",
+  enumerable: true,    // default: true
+  configurable: true,  // default: true
+  writable: true       // default: true
+});</pre>
 
-<code><pre>function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
-  // Define "name" property and give it a default value
-  Object.defineProperty(this, "name", {
-    get: function() {
-      return name;
-    },
-    set: function(newName) {
-      name = newName;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  
-  this.name = name || "Unnamed";  // does this work still??
+<h3>get and set</h3>
+<p>This is similar to what we saw on the previous page. Basically, the reason you'd use this is if you already defined an object using object literal notation but need to define the property for the object later. Borrowing an example from page 43 of <cite>The Principles of Object-Oriented JavaScript"</cite>:
 
-  // Repeat for strength
-  Object.defineProperty(this, "strength", {
-    get: function() {
-      return strength;
-    },
-    set: function(newStrength) {
-      strength = newStrength;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  this.strength = strength || 10; // does this work still??
+<pre class="prettyprint linenums">var person1 = {
+  _name: "Nicholas"
+};
 
-  
-  // ... etc ...
- 
-  // Uh oh... every time we call new Creature(), another instance of this function is created!
-  this.printInfo = function() {
-    console.log("Name: " + this.name + "\n"
-               +"Strength: " + this.strength + "\n"
-               +"Hitpoints: " + this.hitpoints);
-  } 
-}
+// This is one use-case for defineProperty -- we'll see more later
+Object.defineProperty(person1, "name", {
+  get: function() {
+    console.log("Reading name");
+    return this._name;
+  },
+  set: function(value) {
+    console.log("Setting name to %s", value);
+    this._name = value;
+  },
+  enumerable: true,
+  configurable: true
+});</pre>
 
-
-var goblin1 = new Creature;   // if not passing arguments, () not needed
-var goblin2 = new Creature(); // same as agove
-var goblin3 = new Creature("Dobby", 15); 
-</pre></code>
-
-<p>So nothing particularly new here, but there are some problems. Every time you call new Creature, another copy of the function printInfo is created and defined. A better solution is to put our methods as a member of the object's prototype. Backing up a bit to simplify the example, we could do this: </p>
-
-<code><pre>
-function Creature(name) {
-  this.name = name || "Unnamed";
-}
-
-Creature.prototype.printInfo = function() {
-  console.log("Name: " + this.name);
-}
-
-var goblin = new Creature("Dobby");
-goblin.printInfo(); // -->  Name: "Dobby"
-
-</pre></code>
-
-<p>What's going on here? When you call goblin.printInfo(), JavaScript first checks if goblin has a property or method called printInfo(). Finding none, it goes up the prototype chain and checks Creature.prototype for a printInfo property and finds one - the one we just defined! This is great news. Now  we have just one copy of the function. A warning: Do not store data members unless you want that data member to be a "static", class-wide data member that is updated for all instances of that class each time it is changed!<p>
-
-<p>Continue reading to see how we pull this together into a cohesive Creature class.</p>
+<p><a href="?page=3">Continue to the next page to see how we can start putting this all together</a></p>

@@ -1,59 +1,138 @@
-<h1>Privacy, Please!</h1>
-<p>A quick recap: So far we've seen how to make objects from a constructor using properties, configure the attributes on those properties, assign methods to their prototypes, and inherit from other objects to create Prototype Chaining to inherit behavior and steal data members from superclass constructors - aka, Prototypal Inheritance.</p>
+<h2 class="page-header">Prototype Chaining and Inheritance</h2>
+<p>Recall from the last section that when we attempt to access a property on an object how the engine first searches the instance of the object, then goes to its prototype to find the property there if it doesn't exist? This should sound a lot like classical inheritance... and in a way, it is.</p>
 
-<p>Let's now turn our attention to something I promised at the outset: Private data variables and methods vs. Public Methods and Properties. If you've studied JavaScript closures and Immediately Invoked Function Expressions, this should feel welcome and intuitive (peraps even self-evident!) to you. If not, I suggest some reading to get up to speed with the concepts.</p>
+<p>We are going to lean heavily on this prototype lookup method for creating inheritance. Prototype chaining is simple to conceptualize. Imagine you have an object and call a method and that expect it will have inherited - somehow - from some superclass "above it" in the class hierarchy. In JavaScript, what we're talking about is a situation where an object looks to its prototype to see if the method was defined there as just described. What if it's not found? Chaining!</p>
 
-<p>Let's start with an example. Note that there is a similar pattern for a singleton object (The module pattern and the "revealing" module pattern). I'm going to focus on the constructor/class-like pattern. Let's make our 'privatize' our creature class from before. The key concept with this pattern is that we first define some private variables. We're going to modify some of our design decisions a bit here, too. If we want private data accessible through a public method, we have to store the related functions on the object itself, rather than on the prototype. </p>
+<p>In the simplest case, our object's "superclass" is the great-grand-daddy/mommy Object type in JavaScript. If we call toString() on some simple object that doesn't have that defined in its properties, we'll see that its prototype is Object. And Object does, indeed, have a toString() method. In fact, when you call console.log(someObject), the method implicitly calls the toString() method of the object.</p>
 
-<code><pre>
-function Creature(name, str) {
-  var strength  = str || 100;   // this will be captured inside our closure
-  this.name = name || "Unnamed";
-  
-  this.getStrength = function() {
-    return strength;
-  };
-  
-  this.levelUp = function() {
-    strength += 10;
-  };
+<p>The chaining comes into play when we create an object and point its prototype property to another object we've defined. You see, by default, prototype points to Object, our master Object prototype. But we can - and will - create objects shortly that point to other objects' as their prototype, and so forth.</p>
 
-  this.printInfo = function() {
-    console.log("Name: " + this.name +", Strength: " + getStrength());
+<p>Before we dive into that, here's a list of the methods inherited from Object.prototype:</p>
+<dl>
+  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty?redirectlocale=en-US&redirectslug=JavaScript%2FReference%2FGlobal_Objects%2FObject%2FhasOwnProperty">"hasOwnProperty()</a></dt>
+  <dd>Returns whether an object has a property defined on its own prototype. This answers the question, "does this object itself has this property?" and will return false if it only has it downstream in the prototype chain somewhere. In other words, it returns false even if it inherited the property.</dd>
+
+  <dt>propertyIsEnumerable()</dt>
+  <dd>We reviewed this attribute earlier. Enumerable properties are those over which we can iterate using, for example, a foreach style loop.</dd>
+
+  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf">isPrototypeOf()</a></dt>
+  <dd>Checks if if the passed in object exists anywhere in the caller's prototype chain. This is useful when implementing polymorphic behavior to ensure the object you're working with inherits the needed behaviors from some linked object.</dd>
+
+  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf">valueOf()</a></dt>
+  <dd>Implicitly called when using the assignment operator, the programmer can override valueOf() to return a specific value. See mozilla documentation for some examples and use cases. </dd>
+
+  <dt>toString()</dt>
+  <dd>Same as valueOf, but called implicitly when a string is expected. For example, console.log() will call this on your object. Useful for debugging and can be overridden.</dd>
+</dl>
+
+
+<h2>Creating the Chain</h2>
+<p>Okay, all of that is great, but how do we make an object actually inherit the behaviors from another Object? Prototypical inheritance (just a term that describes what prototype chaining is doing) can be achieved using Object.create(). The syntax is quite easy. You pass in two arguments:
+
+<ol>
+  <li>The object to use for [[Prototype]] in the new object</li>
+  <li>An object of property descriptors similar to you'd see in O.defineProperties()</li>
+</ol>
+
+<p>We didn't touch on .defineProperties() yet. So let's take a look at an example using an object, first, and then using a constructor:
+
+<pre class="prettyprint linenums"><pre>
+var creature1 = {
+  name: "Shrek",
+  skill: "burping",
+  brag: function() {
+    console.log("My name is " + this.name + " and I am the best at " + this.skill "!"); 
   }
+};
+
+var creature2 = Object.create(creature1, {
+
+  // Define a property on creature2 that overrides creature1
+  name: {
+    configurable: true,
+    enumerable: true,
+    value: "Donkey",
+    writable: true
+  }
+  skill: {
+    configurable: true,
+    enumerable: true,
+    value: "talking, and talking, and talking",
+    writable: true
+  }
+  // Note that we did not define brag() here!
+});
+
+creature1.brag();   // "My name is Shrek and I am the best at burping!"
+creature2.brag();   // "My name is Donkey and I am the best at talking, and talking, and talking!"
+</pre></code>
+
+<p>As you can see, even though we did not define the brag behavior on the creature2, creature2 can still brag. Now let's move on to defining a prototype chain for a our class-like construct. Let's pull in our most sophisticated example from before and enhance it:</p>
+
+
+<pre class="prettyprint linenums">
+function Creature(name, strength) {
+  this.name = name || "Unnamed";
+  this.strength = 100 || strength;
 }
 
 // Our "superclass"
 Creature.prototype = {
   constructor: Creature,  
 
-  // This is okay, name is not private.
   battleCry: function() {
     console.log(this.name + " will crush you!");
+  },
+
+  printInfo: function() {
+    console.log("Name: " + this.name +", Strength: " + this.strength);
+  },
+
+  levelUp: function() {
+    this.strength += 10;
   }
 };
 
 // Subclass of Creature
 function Furry(name, strength) {
-  // call superclass constructor to 'steal' the public methods and data members
-  Creature.call(this, name, strength); 
+  this.name = name || "Furry creature";
+  this.strength = 40 || strength;
 }
 
 // Here's the prototypal inheritance
-Furry.prototype = new Creature();   
-Furry.prototype.constructor = Furry; 
+Furry.prototype = new Creature();    // get all our fancy Creature behavior
+Furry.prototype.constructor = Furry; // make sure Furry still knows 'who' constructed it
 
+// For fun, let's extend our Furry creature
 Furry.prototype.shed = function() {
   console.log(this.name + " sheds all over the floor. Ew!");
 }
 
-var ogre = new Creature("Shrek");
-ogre.name = "Bob"; // Doesn't work!
-console.log(ogre.getStrength()); // 100
+var ogre = new Creature("Shrek", 110);
+ogre.battleCry();       // "Shrek will crush you!"
+ogre.printInfo();       // "Name: Shrek, Strength: 150"
 ogre.levelUp();
-ogre.printInfo(); // "Name: Shrek, Strength: 110"
-</pre></code>
+ogre.printInfo();       // "Name: Shrek, Strength: 160"
+var donkey = new Furry("Donkey", 9001);
+donkey.battleCry();     // "Donkey will crush you!"
+donkey.printInfo();     // "Name: Donkey, Strength: 9001"
+donkey.shed();          // "Donkey sheds all over the floor. Ew!");
+donkey.levelup();
+donkey.printInfo();     // "Name: Donkey, Strength: 9011"
+console.log(donkey instanceof Creature); // true
+</pre>
 
-<p>Whew. Nothing crazy here. The biggest thing to note is that we declare stength as a variable, instead of contextually applying it as a property that's attached to the local this parameter inside of Creature. What does that mean? Well, normally strength would fall out of scope. But because of closure, Creature can still see the strength variable. And the functions on it can likewise see it. This is just good old closure being applied for our purposes. </p>
+<p>Okay, let's golf-clap a little bit at our succesfull mission to create some semblance of classes in JavaScript! One nice note is that if you use the instanceof operator on donkey, or any other Furry, it will report true. Let's make one more note before we move on. Note how our constructor is very similar for both classes? If we wanted to call the superclass constructor instead of redfining it, we could use the .call() method like so:</p>
 
-<p>Continue reading to get an overview of other options for class-related design in JavaScript</p>
+<pre class="prettyprint linenums">
+function Furry(name, strength) {
+  // calls Creature() using the enclosing context as the 'this' parameter - yay closure!
+  Creature.call(this, name, strength); 
+}
+</pre>
+
+<p> This same idea can be applied to another other method, including the superclasses prototype chain methods like Object.toString(). This is actaully the only way to access the supertypes method prior to ecmascript6. <em>But wait...</em> what about the data members? So far we've only inherited the methods applied to the prototypes.</p>
+
+<p>We have to use the pattern just covered, calling the superclass constructor with the this parameter, in orer to "steal" the data members back. </p>
+
+<p>Continue reading to see how we achieve private data members using the Module Pattern.</p>
