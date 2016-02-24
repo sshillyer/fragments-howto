@@ -1,4 +1,5 @@
 // example5.js
+
 var shape = {};
 
 Object.defineProperty(shape, "color", {

@@ -1,3 +1,5 @@
+// example6.js
+
 var person1 = {
   _name: "Nicholas"
 };

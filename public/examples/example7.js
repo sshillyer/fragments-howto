@@ -1,3 +1,5 @@
+// example7.js
+
 function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   this.name = name || "Unnamed";
   this.strength = strength || 10;

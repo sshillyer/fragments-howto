@@ -4,7 +4,7 @@
 <p>First things first: let's make a constructor. A constructor in JS is just any function that we call with new to get an object back as an implicit return value. The function <em>becomes</em> a constructor because we call the function with the <code>new</code> keyword. The object returned has everything bound in its lexical scope bound to it. These properties become public because we can then access them using dot notation. We'll see later how we can use local variable scope and closures to wrap those properties into our objects as truly private.</p>
 
 <h4><a href="examples/example7.js">Example 7 <span class="glyphicon glyphicon-file"></span></a></h4>
-<pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
+<pre class="prettyprint linenums pre-scrollable">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
   this.name = name || "Unnamed";
   this.strength = strength || 10;
   this.hitpoints = health || 100;
@@ -43,13 +43,16 @@ goblin3.printInfo();
 <p>In this next snippet, note that we set the attributes for each property in each call: get, set, enumerable and configurable properties are all explicitly set using object literal syntax.<p>
 
 <h4><a href="examples/example8.js">Example 8 <span class="glyphicon glyphicon-file"></span></a></h4>
-<pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
+<pre class="prettyprint linenums pre-scrollable">"use strict";
+
+function Creature(name, strength, hitpoints) {   //  Note capital letter - convention for a constructor method
   // Define "name" property and give it a default value
   Object.defineProperty(this, "name", {
     get: function() {
       return name;
     },
     set: function(newName) {
+      console.log("Setting name to " + newName);
       name = newName;
     },
     enumerable: true,
@@ -64,17 +67,30 @@ goblin3.printInfo();
       return strength;
     },
     set: function(newStrength) {
+      console.log("Setting strength to " + newStrength);
       strength = newStrength;
     },
     enumerable: true,
     configurable: true
   });
+    
   this.strength = strength || 10; // does this work still??
 
+  Object.defineProperty(this, "hitpoints", {
+    get: function() {
+      return hitpoints;
+    },
+    set: function(newHitpoints) {
+      console.log("Setting hitpoints to " + newHitpoints);
+      hitpoints = newHitpoints;
+    },
+    enumerable: true,
+    configurable: true
+  });
   
-  // ... etc ...
+  this.hitpoints = hitpoints || 100;
  
-  // Uh oh... every time we call new Creature(), another instance of this function is created!
+  // Hmm... every time we call new Creature(), another instance of this function is created
   this.printInfo = function() {
     console.log("Name: " + this.name + "\n"
                +"Strength: " + this.strength + "\n"
@@ -82,11 +98,20 @@ goblin3.printInfo();
   } 
 }
 
-
-var goblin1 = new Creature;   // if not passing arguments, () not needed
-var goblin2 = new Creature(); // same as agove
+var goblin1 = new Creature;
+var goblin2 = new Creature("Scribblez", 10, 40); 
 var goblin3 = new Creature("Dobby", 15); 
-</pre>
+goblin3.printInfo();
+
+//Setting name to Unnamed
+//Setting Strength to 10
+//Setting name to Unnamed
+//Setting Strength to 10
+//Setting name to Dobby
+//Setting strength to 15
+//Name: Dobby
+//Strength: 15
+//Hitpoints: undefined</pre>
 
 <p>Each goblin we instantiate gets its own local property defined. This syntax, so far, has mostly allowed us to set up the attributes we discussed in the context of a constructor.</p>
 
@@ -105,17 +130,9 @@ Creature.prototype.printInfo = function() {
 }
 
 var goblin = new Creature("Dobby");
-goblin.printInfo(); // -->  Name: "Dobby"
+goblin.printInfo(); // -->  Name: Dobby</pre>
 
-</pre>
+<p>This is not terribly important right-off, but it does mean we have only one version of printInfo(), and it is now stored on the prototype. If we want to modify the behavior of a function for all objects with the same prototype, then we can go to one place to do so. Also, if we had thousands of complex objects with many functions, we are saving resources by not having a copy of the function stored "on" every instance of the class-like objects we're creating. In fact, prototypes are very important to what we are going to do in the rest of this guide.</p>
 
-<h3>Touching on Prototypes</h3>
-<p>What's going on here? Instead of giving every instance of the Creature objects their own complete copy of the function, we're actually giving the function to their prototype. You can think of the Prototype as a superclass in other languages like Java and C++.</p>
-
-<p>When you call goblin.printInfo(), JavaScript first checks if goblin has a property - whether its a data member or a function - called printInfo. (Side note: we can manually check this with <code>goblin.hasOwnProperty("printInfo")</code>). Finding none, it goes <em>up the prototype chain</em> and checks Creature.prototype for a printInfo property and finds one - the one we just defined!</p>
-
-<p>This is great news. Now  we have just one copy of the function for all objects! Also, if we make a change to that function on the prototype, it will effect every other object with that prototype. Hopefully you'll recall that every object, by default, has a prototype chain that goes up to the Object.prototype.</p>
-    
-<p>A warning: Do not store <em>data</em> members on an object's prototype unless you want those data members to be a "static", class-wide data members that are updated for all instances of that class each time it is changed!</p>
 
 <p>Continue reading to see how we pull this together into a cohesive Creature class.</p>
