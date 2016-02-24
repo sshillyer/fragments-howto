@@ -1,5 +1,5 @@
 <h2 class="page-header">Attributes: Building Towards Class-like Behavior</h2>
-<p>First, let's demonstrate how to emulate a behavior we sometimes see with a class - a constant data member, that is. In JavaScript, these are called non-Writable objects. To achieve this, we can ues the defineProperty() method of the JavaScript Object object:</p>
+<p>Attributes, to define them recursively, are attributes that describe a property's ability to be written, discovered, configured, etc. Let's demonstrate how to emulate a behavior we sometimes see with classes in other languages - a constant data member. In JavaScript, the distinction is made between writable and non-writable properties. To achieve this, we can ues the defineProperty() method of the JavaScript Object.</p>
 
 <h4><a href="examples/example3.js">Example 3 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">// If we use strict, assigning to square.color after making writable 
@@ -20,7 +20,9 @@ console.log(square.color); // red
 square.color = "green";
 console.log(square.color); // red</pre>
 
-<p>The first argument is the object we are defining a property on. The second argument is the property we are defining. The third property is an object-literal which lists the various attributes we are defining. Some of the other attributes we can define for a property using htis same method include:</p>
+<p>The first argument is the object we are defining a property on - in this case, square. The second argument is the property we are defining. The third property is an object-literal which lists the various attributes we are defining. In the above code example, we define the property color to be non-writable. Color already exists, so it simply updates the existing property's attribute.</p>
+
+<p>The other attributes we can define for a property using <code>Object.defineProperty()</code> include:</p>
 
 <p><dl class="list-group">
 <dt class="list-group-item">Enumerable</dt>
@@ -44,6 +46,8 @@ console.log(square.color); // red</pre>
 </dl></p>
 
 <h2>Using Attributes</h2>
+<p>Let's dive a little deeper into each of these attributes and discuss how their settings can impact what we can do with an object's properties.</p>
+
 <h3>Enumerable</h4>
 <p>You can get all of an Objects enumerable properties' keys by calling Object.keys() on the object and storing it in a variable:</p>
 <pre class="prettyprint">var properties = Object.keys(object);</pre>
@@ -109,7 +113,7 @@ shape.sides = 20;
 console.log(shape.color + " shape has changed color, but still has " + shape.sides + " sides.");</pre>
 
 <h3>Get and Set</h3>
-<p>This is similar to what we saw on the previous page. Basically, the reason you'd use this is if you already defined an object using object literal notation but need to define the property for the object later. Borrowing an example from page 43 of <cite>The Principles of Object-Oriented JavaScript"</cite>:
+<p>This is the notation that we already saw on the previous page. One reason you'd modify this is if you already defined an object using object literal notation but need to define the property for the object later. Borrowing an example from page 43 of <cite>The Principles of Object-Oriented JavaScript"</cite>:
 
 <h4><a href="examples/example6.js">Example 6 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">var person1 = {

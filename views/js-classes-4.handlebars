@@ -1,5 +1,7 @@
 <h2 class="page-header">Using Constructors</h2>
-<p>We are going to put away our shape code example in favor of something more interesting - Creatures! We'll make a class of Creatures which we will later try use in an inheritance structure, fleshing it out with private data members.</p> <p>First, let's make a constructor. A constructor in JS is just any function that we call with new to get an object back as an implicit return value. The function <em>becomes</em> a constructor because we call the function with the <code>new</code> keyword. The object returned has everything bound in its lexical scope bound to it.</p>
+<p>We are going to put away our shape code example in favor of something more interesting - Creatures! We'll make a class of Creatures which we will later try use in an inheritance structure, fleshing it out with private data members.</p> 
+
+<p>First things first: let's make a constructor. A constructor in JS is just any function that we call with new to get an object back as an implicit return value. The function <em>becomes</em> a constructor because we call the function with the <code>new</code> keyword. The object returned has everything bound in its lexical scope bound to it. These properties become public because we can then access them using dot notation. We'll see later how we can use local variable scope and closures to wrap those properties into our objects as truly private.</p>
 
 <h4><a href="examples/example7.js">Example 7 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
@@ -14,11 +16,17 @@
   } 
 }
 
-
 var goblin1 = new Creature;   // if not passing arguments, () not needed
 var goblin2 = new Creature(); // same as agove
-var goblin3 = new Creature("Dobby", 15); 
-</pre>
+var goblin3 = new Creature("Dobby", 15);
+goblin1.printInfo(); 
+goblin3.printInfo();
+// Name: Unnamed
+// Strength: 10
+// Hitpoints: 100
+// Name: Dobby
+// Strength: 15
+// Hitpoints: 100</pre>
 
 <p>On line 1, we've denoted to other users that this function should be treated as a constructor. There is a pattern in JavaScript that can be used to enforce that a call to Creature returns an object which we will touch on later. For now, notice that this function does not look any different from any other function you've written. It also does not explicitly return the object, although you can do so. As we'll see later, returning a specific object from a function can be used for encapsulation purposes.</p>
 <p>In other high-level object-oriented languages, we often have what are termed "default constructors" that are called when no arguments are passed to the constructor. JavaScript, until recently, did not support default values for parameters, so I'm illustrating how we can set default values using the <code>||</code> operator.</p>
@@ -30,7 +38,9 @@ var goblin3 = new Creature("Dobby", 15);
 
 
 <h2>Attributes and Constructors</h2>
-<p>But what about the property attributes we discussed on the previous page - how do they relate? We can use the same style of code we used to define a property, instead passing in <em>this</em> as the object argument to <code>defineProperty()</code> method. In this next snippet, note that we set the attributes for each property in each call: get, set, enumerable and configurable properties are all explicitly set using object literal syntax.<p>
+<p>But what about the property attributes we discussed on the previous page - how do they relate? We can use the same style of code we used to define a property, instead passing in <em>this</em> as the object argument to <code>defineProperty()</code> method. We finally have some fine-tuned control over the properties we're giving to our class-like objects.</p>
+
+<p>In this next snippet, note that we set the attributes for each property in each call: get, set, enumerable and configurable properties are all explicitly set using object literal syntax.<p>
 
 <h4><a href="examples/example8.js">Example 8 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">function Creature(name, strength, health) {   //  Note capital letter - convention for a constructor method
