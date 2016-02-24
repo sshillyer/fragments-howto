@@ -41,7 +41,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 // Set port and public folder for static content
-app.set('port', process.env.PORT || 3000); // defaults to 3000 if env.port not set
+app.set('port', process.env.PORT || 3001); // defaults to 3000 if env.port not set
 app.use(express.static(__dirname + '/public')); // tells express where to go for public static content like css, js, imgs, etc
 
 

@@ -1,41 +1,43 @@
 <h2 class="page-header">Prototype Chaining and Inheritance</h2>
-<p>Recall from the last section that when we attempt to access a property on an object how the engine first searches the instance of the object, then goes to its prototype to find the property there if it doesn't exist? This should sound a lot like classical inheritance... and in a way, it is.</p>
+<p>Recall from the last section that when we attempt to access a property on an object how the engine first searches the instance of the object, then goes to its prototype to find the property there if it doesn't exist? This should sound a lot like classical inheritance... and in a way, it is. </p>
 
-<p>We are going to lean heavily on this prototype lookup method for creating inheritance. Prototype chaining is simple to conceptualize. Imagine you have an object and call a method and that expect it will have inherited - somehow - from some superclass "above it" in the class hierarchy. In JavaScript, what we're talking about is a situation where an object looks to its prototype to see if the method was defined there as just described. What if it's not found? Chaining!</p>
+<p>We are going to lean heavily on this prototype lookup method for creating inheritance. Prototype chaining is simple to conceptualize. Imagine you have an object and call a method and you expect it will have inherited, somehow, from some arbitrary superclass "above it" in the class hierarchy. In JavaScript, what we're talking about is a situation where an object looks to its prototype to see if the method was defined there as just described. What if it's not found? JavaScript automatically goes to the next Prototype pointer. This is how the term Prototype Chaining derived.</p>
 
 <p>In the simplest case, our object's "superclass" is the great-grand-daddy/mommy Object type in JavaScript. If we call toString() on some simple object that doesn't have that defined in its properties, we'll see that its prototype is Object. And Object does, indeed, have a toString() method. In fact, when you call console.log(someObject), the method implicitly calls the toString() method of the object.</p>
+
+<h3>Inherited Methods from Object.prototype</h3>
 
 <p>The chaining comes into play when we create an object and point its prototype property to another object we've defined. You see, by default, prototype points to Object, our master Object prototype. But we can - and will - create objects shortly that point to other objects' as their prototype, and so forth.</p>
 
 <p>Before we dive into that, here's a list of the methods inherited from Object.prototype:</p>
-<dl>
-  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty?redirectlocale=en-US&redirectslug=JavaScript%2FReference%2FGlobal_Objects%2FObject%2FhasOwnProperty">"hasOwnProperty()</a></dt>
-  <dd>Returns whether an object has a property defined on its own prototype. This answers the question, "does this object itself has this property?" and will return false if it only has it downstream in the prototype chain somewhere. In other words, it returns false even if it inherited the property.</dd>
+<dl class="list-group">
+  <dt class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty?redirectlocale=en-US&redirectslug=JavaScript%2FReference%2FGlobal_Objects%2FObject%2FhasOwnProperty">"hasOwnProperty()</a></dt>
+  <dd class="list-group-item">Returns whether an object has a property defined on its own prototype. This answers the question, "does this object itself has this property?" and will return false if it only has it downstream in the prototype chain somewhere. In other words, it returns false even if it inherited the property.</dd>
 
-  <dt>propertyIsEnumerable()</dt>
-  <dd>We reviewed this attribute earlier. Enumerable properties are those over which we can iterate using, for example, a foreach style loop.</dd>
+  <dt class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable">propertyIsEnumerable()</a></dt>
+  <dd class="list-group-item">We reviewed this attribute earlier. Enumerable properties are those over which we can iterate using, for example, a foreach style loop.</dd>
 
-  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf">isPrototypeOf()</a></dt>
-  <dd>Checks if if the passed in object exists anywhere in the caller's prototype chain. This is useful when implementing polymorphic behavior to ensure the object you're working with inherits the needed behaviors from some linked object.</dd>
+  <dt class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf">isPrototypeOf()</a></dt>
+  <dd class="list-group-item">Checks if if the passed in object exists anywhere in the caller's prototype chain. This is useful when implementing polymorphic behavior to ensure the object you're working with inherits the needed behaviors from some linked object.</dd>
 
-  <dt><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf">valueOf()</a></dt>
-  <dd>Implicitly called when using the assignment operator, the programmer can override valueOf() to return a specific value. See mozilla documentation for some examples and use cases. </dd>
+  <dt class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf">valueOf()</a></dt>
+  <dd class="list-group-item">Implicitly called when using the assignment operator, the programmer can override valueOf() to return a specific value. See mozilla documentation for some examples and use cases. </dd>
 
-  <dt>toString()</dt>
-  <dd>Same as valueOf, but called implicitly when a string is expected. For example, console.log() will call this on your object. Useful for debugging and can be overridden.</dd>
+  <dt class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString">toString()</a></dt>
+  <dd class="list-group-item">Same as valueOf, but called implicitly when a string is expected. For example, console.log() will call this on your object. Useful for debugging and can be overridden.</dd>
 </dl>
 
 
-<h2>Creating the Chain</h2>
+<h3>Implementing Prototype Chaining</h3>
 
-<p>Okay, all of that is great, but how do we make an object actually inherit the behaviors from another Object? Prototypical inheritance (just a term that describes what prototype chaining is doing) can be achieved using Object.create(). The syntax is quite easy. You pass in two arguments:
+<p>Okay, all of that is great, but how do we make an object actually inherit the behaviors from another Object? Prototypical inheritance can be achieved using Object.create(). The syntax is quite easy. You pass in two arguments:
 
 <ol>
   <li>The object to use for [[Prototype]] in the new object</li>
-  <li>An object of property descriptors similar to you'd see in O.defineProperties()</li>
+  <li>An object of property descriptors. See the next example.</li>
 </ol>
 
-<p>We didn't touch on .defineProperties() yet. So let's take a look at an example using an object, first, and then using a constructor:
+<p></p>
 
 <h4><a href="examples/example12.js">Example 12 <span class="glyphicon glyphicon-file"></span></a></h4>
 <pre class="prettyprint linenums">
@@ -43,19 +45,19 @@ var creature1 = {
   name: "Shrek",
   skill: "burping",
   brag: function() {
-    console.log("My name is " + this.name + " and I am the best at " + this.skill "!"); 
+    console.log("My name is " + this.name + " and I am the best at " + this.skill + "!"); 
   }
 };
-
+ 
 var creature2 = Object.create(creature1, {
-
+ 
   // Define a property on creature2 that overrides creature1
   name: {
     configurable: true,
     enumerable: true,
     value: "Donkey",
     writable: true
-  }
+  },
   skill: {
     configurable: true,
     enumerable: true,
@@ -64,7 +66,7 @@ var creature2 = Object.create(creature1, {
   }
   // Note that we did not define brag() here!
 });
-
+ 
 creature1.brag();   // "My name is Shrek and I am the best at burping!"
 creature2.brag();   // "My name is Donkey and I am the best at talking, and talking, and talking!"
 </pre>
