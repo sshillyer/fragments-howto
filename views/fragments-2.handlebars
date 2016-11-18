@@ -1,0 +1,41 @@
+<h2 class="page-header">Creating Fragments</h2>
+
+<h1>Creating Fragments</h1>
+<p>Designing your app with modularity in mind suggests that you use fragments as the building blocks for your application rather than activities alone. Our goal, then, will be to start building our application using fragments. There are some basic steps involved:
+<ul>
+  <li>Create a Java class that extends Fragment</li>
+  <li>Create an XML layout file defining the appearance of that fragment</li>
+  <li>Add the fragment to the activity</li>
+  <li>Inflate the fragment</li>
+</ul>
+
+<p>Let's go ahead and get started with our first fragment app. Fire up Android studio (I'm using version 2.2) and set up a New Project:
+
+<p><img src="img\new-project.png">
+
+<p>Click next and then accept the default values. For the minimum SDK, API 15: Android 4.0.3 (IceCreamSandwich) will work just fine. Click Next again, and select the Master/Detail Flow activity. 
+
+<p>Once ANdroid Studio (AS) has generated the code, you can drill in to see how this is set up. In the java/com.example.admin.fragmentsdemo/dummy directory, you'll see a dummy set of Item* files. One file is the ItemDetailActivity, one is the ItemDetailFragment, and one is the ItemListActivity. The ItemDetailActivity exists to display the details of an item once clicked upon, while the Fragment is the reusable component. ItemListActivity is an activity used to display a list of items.
+
+<p>The ItemDetailFragment class is extending Fragment. The code generated some dummy values and methods for a developer to work with. It overrides the onCreate and onCreateView methods. We will deal with these details more, but if you read the official android guide, these methods should be familiar to you. 
+
+<h2>Seeing is Believing</h2>
+<p>Now is a good time to fire up the app on two devices: a tablet and a smaller handheld device. You'll see that the handheld device does not display the list and the details of an item at the same time, while the tablet device does (once you click on an item).
+<h3>Phone Activities and Fragments</h5>
+<p><img src="img/fragment-demo-phone1.png">
+<img src="img/fragment-demo-phone2.png">
+
+<h3>Tablet Activity and Fragments</h5>
+<p><img src="img/fragment-demo-tablet.png">
+
+<h3>What's Happening</h3>
+<p>There is a bit of logic going on that the code generation took care of us. In the ItemListActivity file, the following code is setting a boolean value depending on the size of device being used:
+<pre class="prettyprint linenums">if (findViewById(R.id.item_detail_container) != null) {
+    // The detail container view will be present only in the
+    // large-screen layouts (res/values-w900dp).
+    // If this view is present, then the
+    // activity should be in two-pane mode.
+    mTwoPane = true;
+}</pre>
+
+<p>We will revisit this later. In the next segment, we are going to start a new project (again) and build our own fragment from scratch so that we can understand how to implement this logic on our own.

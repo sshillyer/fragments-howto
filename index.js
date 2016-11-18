@@ -41,7 +41,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 // Set port and public folder for static content
-app.set('port', process.env.PORT || 3001); // defaults to 3000 if env.port not set
+app.set('port', process.env.PORT || 3050); // defaults to 3050 if env.port not set
 app.use(express.static(__dirname + '/public')); // tells express where to go for public static content like css, js, imgs, etc
 
 
@@ -63,7 +63,7 @@ app.get('/', function(req,res){
         console.log(getRequest);
         if (getRequest.length > 0 && getRequest[0] != 0) {
             var pageNum = getRequest[0];
-            var pageTitle = "js-classes-" + Number(pageNum);
+            var pageTitle = "fragments-" + Number(pageNum);
             var prevPage = Number(pageNum) - 1;
             var nextPage = Number(pageNum) + 1;
             context.prevPage = prevPage >= 0 ? prevPage : 0;
@@ -71,7 +71,7 @@ app.get('/', function(req,res){
             context.curPage = pageNum;
         }
         else {
-            pageTitle = "js-classes-1";
+            pageTitle = "fragments-1";
             context.prevPage = 0;
             context.nextPage = 2;
             context.curPage = 1;

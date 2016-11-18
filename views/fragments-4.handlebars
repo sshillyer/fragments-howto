@@ -1,0 +1,98 @@
+<h2 class="page-header">Programatically Adding Fragments</h2>
+<h2>FragmentManager Primer</h2>
+
+<p>The key to programatically adding Fragments is to use the FragmentManager class. There are a few steps you will take, and the order matters for some of them:
+
+<ol>
+  <li>Get a reference to the FragmentManager class by calling getSupportFragmentManager()</li>
+  <li>Create a transaction (adding, removing, replacing fragments)</li>
+  <li>Commit the transaction</li>
+</ol>
+
+
+In your xml file for the activity, you will typically create a placeholder:
+
+<pre class="prettyprint linenums pre-scrollable">
+&lt;FrameLayout
+    android:id="@+id/fragment_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"/>
+</pre>
+
+<p>These are not a prescription, but rather, a baseline for what you might use. With the placeholder in the .xml file, you're ready to go out and make things happen. In our working example, we had a class called BlankFragment. We can instantiate an instance of our fragment and use the fragment, along with the resource ID we set up in the FrameLayout, to generate the fragment programatically. Let's try it:
+
+<pre class="prettyprint linenums pre-scrollable">
+BlankFragment myFragment = new BlankFragment();
+getSupportFragmentManager()  // step 1
+  .beginTransaction()        // step 2
+  .add(R.id.fragment_container, myFragment)
+  .commit();                 // Entire transaction runs only after calling commit
+</pre>
+
+<p>Note that for the .add() call, we have to pass in the resouce id ( android:id="@+id/fragment_container" in the .xml file) and the fragment we declared in line one just above. We could do multiple transactions between the .beginTransaction() and .commit() methods.
+
+<p>Removing a fragment involves a similar pattern:
+
+<pre class="prettyprint linenums pre-scrollable">
+BlankFragment myFragment = new BlankFragment();
+getSupportFragmentManager()  // step 1
+  .beginTransaction()        // step 2
+  .remove(myFragment)
+  .commit();                 // Entire transaction runs only after calling commit
+</pre>
+
+<p>Replacing a fragment can be done by using the replace method. This will take a placeholder, remove the existing fragment, and add the one passed in.
+
+<pre class="prettyprint linenums pre-scrollable">
+BlankFragment myFragment = new BlankFragment();
+getSupportFragmentManager()  // step 1
+  .beginTransaction()        // step 2
+  .replace(R.id.fragment_container, myFragment)
+  .commit();                 // Entire transaction runs only after calling commit
+</pre>
+
+<p>What else can we do?
+<ul>
+  <li>Set transitions</li>
+  <li>manage activity's back stack</li>
+  <li>show and hide fragments</li>
+  <li>and manage breadcrumbs.</li>
+</ul>
+
+<p>The <a href="https://developer.android.com/reference/android/app/FragmentTransaction.html">official documentation on the FragmentTransaction class</a> is very useful in reviewing what's available.
+
+
+<h1>Putting FragmentManager to Work</h1>
+<p>Go into your activity_main.xml file and change the fragment tag to a FrameLayout tag. Also, update the id to fragment_container. Because we are going to use this as an anchor, we also need to remove the class declaration - this is just an 'anchor' to which we will attach our fragment in the java code. Finally, remove the tools attribute. The tag should look like this when you're done:
+
+<pre class="prettyprint linenums pre-scrollable">
+&lt;FrameLayout
+    android:id="@+id/fragment_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    />
+</pre>
+
+<p>What we would like to do next is implement the code that will build the fragment using the samples above as a guide. We start by going to MainActivity.java and going to the onCreate() method because we want our fragment to be attached to the container as the application starts up, before it is rendered on the screen.
+
+<p>Here is the code you should place inside the onCreate() method after the pregenerated code:
+
+<pre class="prettyprint linenums pre-scrollable">
+        BlankFragment myFragment = new BlankFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, myFragment)
+                .commit();
+</pre>
+
+As before, we declare a new instance of BlankFragment. Then, we get a fragment manager and call the appropriate methods: we begin the transaction, we call the various transaction methods we would like to do, and then we commit the change, putting the transaction into the queue of tasks to be executed as soon as a thread is available. Run the program on your device or emulator and you'll see the same screen as before.
+
+<h2>A better solution</h2>
+
+<p>When working with a fragment programatically, as above, we often want to interact with the fragment outside of the particular method in which it was declared. In this case, if we want to access the fragment outside of onCreate(), we have a problem. If we were to call the constructor every time we wanted to get a reference to the fragment, we would end up with multiple instances of the fragment.
+
+<p>Your first thoguht might be to split the declaration and the assignment of the fragment up. If you move the declaration into the MainActivity class as a private member variable rather than a local variable in onCreate(), you would think that reference would persist. If you did this, everything would appear to work fine until you do something like changing the orientation of the device. Suppose you had a (presumably) persistant private myFragment variable in the class as described. You could create a button and an event listener that would call the getSupportFragmentManager() code above, and another button that removes the fragment by calling .remove() instead. But if you try this, you'll note that changing the orientation of the device will lose the reference to the button!
+
+<p>In the next segment, we will go ahead and discuss the better - and proper - way of handling fragment lifecycles.

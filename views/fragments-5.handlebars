@@ -1,0 +1,115 @@
+<h2 class="page-header">Removing Fragments</h2>
+<p>Let's add a couple of buttons to the activity_main.xml file using the Design view. Edit the text of one button to say "Add Fragment". Then go into Text mode and add an event handler to the button:
+
+<pre class="prettyprint linenums">android:onClick="addClickHandler"
+</pre>
+<p>Rinse and repeate for the second button, but using "Remove Fragment" and "removeClickHandler". 
+
+<p>To quickly generate the clickHandler methods, move the cursor to the lines with the onClick handlers in the xml file. Then press alt+enter to open the intention action dialogue once more and select "Create onClick event handler", selecting the only option - MainActivity - as the location for the handler. Android Studio will navigate you there as usual, so you'll want to go back into the xml file and repeat this for the removeClickHandler method as well.
+
+<p>Now, let's implement the clickHandler() method. Move the getSupportFragmentManager() call from the onCreate method down into the clickHandler() method. We still assign a new BlankFragment to the myFragment variable in onCreate(), but the fragment won't be added to the fragment_container until we click the button.
+
+<p>Here's what the buttons you added to the activity_main.xml file should look like (roughly):
+<pre class="prettyprint linenums">
+    &lt;Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:onClick="addClickHandler"
+        android:text="Add Fragment" />
+
+    &lt;Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="removeClickHandler"
+        android:text="Remove Fragment" />
+</pre>
+
+
+<p>Okay, so we have our buttons and we have our stubs. What do we do now? Well, we know that a persistent variable won't work - try it out if you don't believe me - so we need another solution to find a fragment we add. Let's wire up our click handlers and discuss what's going on.
+
+<p>In the onCreate method, we will move the BlankFragment myFragment = new BlankFragment declaration statement and put it in addClickHandler. We will also move the getSupportFragmentManager() call as well. No changes needed. When we open the app, the fragment will not be created until we click the button.
+
+<p>Our new fun stuff happens in removeClickHandler(). First, we need to find a reference to the fragment. We can do this by calling getSupportFragmentManager().findFragmentById(). We will want to assign this to a variable so that we can call .remove() later. Here's what the statement looks like:
+
+<pre class="prettyprint linenums">
+Fragment myFragment = getSupportFragmentManager()
+  .findFragmentById(R.id.fragment_container);
+</pre>
+<p>Note that we simply pass in the id of the container to which we are adding the fragment in the addClickHandler() method. Now, if there is no fragment associated with that id, then myFragment will be set to <pre class="prettyprint linenums">null</pre>. If we use the FragmentManager to remove myFragment when its set to null, an exception will occur. So we check if myFragment is null before calling remove() on the reference that we've found.
+
+<p>Here's what the full class code should look like in MainActivity once you're at this point:
+
+<pre class="prettyprint linenums">
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+    public void addClickHandler(View view) {
+        BlankFragment myFragment = new BlankFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, myFragment)
+                .commit();
+    }
+
+    public void removeClickHandler(View view) {
+
+        Fragment myFragment = getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_container);
+        if (myFragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(myFragment)
+                    .commit();
+        }
+    }
+}
+
+</pre>
+
+<p>Running the code at this point, you can now test that adding and removing the fragment in any combination of clicks with screen rotations in between should work fine. Every time we click remove, the program searches for the fragment. If it's not found, the click does nothing; but if it is, we pass that reference to the remove() method of getSupportFragmentManager() and it does the heavy lifting for us. Awesome!
+
+<p>There's one more option we can use to get a reference to a Fragment: Tags. If you've used tags before, you probably know what's coming, but if not, it's quite simple. First, declare a String that we can use to tack on to the fragment when it's created. This should be a member variable of the MainActivity class, naturally:
+
+<pre class="prettyprint">public static final String MY_FRAGMENT_TAG = "my_fragment_tag";
+</pre>
+
+<p>The beautiful part is that .add() method has an optional third argument, a String tag. Let's just add that to our .add() call:
+
+<pre class="prettyprint">
+.add(R.id.fragment_container, myFragment, MY_FRAGMENT_TAG)
+</pre>
+
+And we can change .findFragmentById(R.id.fragment_container); to use another method: .findFragmentByTag(). We pass in the tag we wish to find:
+
+<pre class="prettyprint">
+Fragment myFragment = getSupportFragmentManager()
+  .findFragmentByTag(MY_FRAGMENT_TAG);
+</pre>
+
+<p>Run the app now and you'll see that it behaves preciosly in the same manner. There's one more tool I'd like to show you, though.
+
+<p>When you are working on adding a fragment, you can add the fragment to the backstack. This means that a user can click the device's back button and it will remove the fragment. It's quite simple. Just add .addToBackStack(null) to the transaction. Fire up the app after modifying the addClickHandler() like so to see how this works:
+
+<pre class="prettyprint linenums">
+    public void addClickHandler(View view) {
+        BlankFragment myFragment = new BlankFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .addToBackStack(null)
+                .add(R.id.fragment_container, myFragment, MY_FRAGMENT_TAG)
+                .commit();
+    }
+</pre>

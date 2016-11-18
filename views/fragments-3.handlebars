@@ -1,0 +1,28 @@
+<h2 class="page-header">Fragments from Scratch</h2>
+<p>Start another new project - I called mine FragmentFromScratch - and this time select the Empty Activity as the base Activity. Again, the default API is fine. Generate Layout File shoudl remain checked. Wait for AS to finish generating the code.
+
+<p>This creates a very simple Android app that does essentially nothing. Now, let's insert a blank Fragment by right clicking on app, selecting New --> Fragment --> Fragment (Blank).
+
+<p><img src="img\new-fragment.png">
+
+<p>On the dialogue, leave "Create layout XML?" checked, but uncheck the other two options. Click Finish. AS will insert a new BlankFragment class in the java/com.example.android.fragmentfromscratch/ folder of the project. By default, this has an empty public constructor stub and overrides onCreateView.
+
+<p>The onCreateView method inflates an xml layout file; the resource xml file is also created when you generate a fragment as we have here. You can navigate to the file in the res/ directory of the project or ctrol+click the R.layout.fragment_blank resource reference in the inflater.inflate() call.  For more information on inflate, you can always <a href="https://developer.android.com/reference/android/view/LayoutInflater.html">read the docs here.</a> Essentially, the inflator takes an xml resource file and expands it (hence, inflate) into some location.
+
+<p>Modify the fragment_blank.xml file to look like the below sample. Note that we changed the root to a RelativeLayout and updated the width and height to wrap_content, added a background color and some padding. You can verify the Fragment is set up properly by checking it in design view - it should look like the image below.
+
+<p><img src="img/first-fragment.png"></img>
+<p><img src="img/first-fragment-design.png"></img>
+
+<h1>Linking the Fragment to an Activity</h1>
+<p>There are two primary ways to link in the Fragment we just created: linking it inside the XML file for the activity, or programmatically in the java file for an activity. Because doing so in XML is the most straightforward, we will try that out first.
+
+<p>Go into the res/layout/activity_main.xml file and delete the TextView element. We're going to replace it with our fragment we just created. Replace the TextView element with the below XML tag:
+
+<p><img src="img/fragment-xml.png">
+
+<p>The key is that we are designating the class inside of the fragment tag using its full path. Note that the com.example.admin.fragmentfromscratch piece of the string is the java/ subfolder where our class resides. We then access the class itself using dot notation, and we omit the .java extension.
+
+<p>Now run the application on a device and you should see the fragment is loaded centered on the screen with the default text. So far, we haven't done a lot outside of the official android guide, but we've done it ourselves in a hands-on manner. In the next segment, we will use Java to programatically set up fragments. Being able to do so will allow you to truly leverage the power of Fragments.
+
+<p><img src="img/first-fragment-emulated.png"></img>
