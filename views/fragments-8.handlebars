@@ -1,15 +1,8 @@
-<h2 class="page-header">Further Study Topics and ECMAScript6</h2>
-<p>I'm going to end this tutorial with a few subjects and concepts you can research on your own further. ECMAScript6 is adding a lot of interesting "syntatic sugar" that impacts how you might write classes and call superclass methods, etc., in the future. There are types of inheritance-like behavior and polymorphism that remain to be explored, as well.</p>
-<h3>Suggested Topics</h3>
-<dl>
-<dt>Mixins</dt>
-<dd>One object acquires the properties of another by copying the properties (specifically, the hasOwnProperty(someProp)==true properties). Typically a shallow copy so objects will only be references, not deep copies, in the receiving object.</dd>
+<h2 class="page-header">Further Study Topics</h2>
+<p>We've done a fair bit of hands-on practice with Fragments, but these are just the essentials to get you going with Fragments. The best way to learn is by practicing and reading through examples. I highly recommend playing around with some of the fragments-based templates in Android Studio - what we've looked at so far should allow you to make sense of some of the logic used.
 
-<dt>Scope-Safe Constructors</dt>
-<dd>Conditional handling in a constructor - say, MyType - that checks if it was called with 'new' or not by checking if (this instanceof MyType). If not, you can typically use else clause to just recurisvely call MyType with the new keyword. There are other usecases for this kind of logic as well.</dd>
+<p>A good starting point is to <a href="https://developer.android.com/guide/index.html">work through the official Android Developer guide</a>. The content there is very well done, and there are examples of how to use a lot of the concepts there. Additionally, links to official references are available embedded in the articles. The biggest benefit is that the material is current and representative of what a modern developer should be using and doing. Much of the content I found online was out of date or based in previous versions of Android Studio, making examples hard to find.
 
-<dt>ECMAScript 6</dt>
-<dd>ES6 has added a lot of syntatic sugar to support some behavior that we explored in this tutorial. There are guides that review ES6 online such as <a href="https://github.com/lukehoban/es6features">this one from Luke Hoban</a>. I forego explaining their use here as the sugar takes away a lot of our learning here, and other resources cover it succinctly (because it's quite decent at abstracting away)</dd>
-</dl>
+<p>The Fragment document is very detailed. The page is a "holy scroller!" page if I've ever seen one. As you can see, there's much to learn. Keep usability and functionality at the forefront; when you need to implement some type of behavior or responsive design, always think about how fragments might fit in with the application. 
 
-<p>The best way to get comfortable with these concepts is to practice. Take some simple class-based designs you've worked with before and try applying the techniques here; go play with EC6 <code>class</code> functionality. Write toy scripts and run them using node.js. And have fun!</p>
+<p>Good luck and have fun!

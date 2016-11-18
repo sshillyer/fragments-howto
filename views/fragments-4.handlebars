@@ -1,7 +1,7 @@
-<h2 class="page-header">Programatically Adding Fragments</h2>
+<h2 class="page-header">Programmatically Adding Fragments</h2>
 <h2>FragmentManager Primer</h2>
 
-<p>The key to programatically adding Fragments is to use the FragmentManager class. There are a few steps you will take, and the order matters for some of them:
+<p>The key to programmatically adding Fragments is to use the FragmentManager class. There are a few steps you will take, and the order matters for some of them:
 
 <ol>
   <li>Get a reference to the FragmentManager class by calling getSupportFragmentManager()</li>
@@ -20,7 +20,7 @@ In your xml file for the activity, you will typically create a placeholder:
     android:layout_centerInParent="true"/>
 </pre>
 
-<p>These are not a prescription, but rather, a baseline for what you might use. With the placeholder in the .xml file, you're ready to go out and make things happen. In our working example, we had a class called BlankFragment. We can instantiate an instance of our fragment and use the fragment, along with the resource ID we set up in the FrameLayout, to generate the fragment programatically. Let's try it:
+<p>These are not a prescription, but rather, a baseline for what you might use. With the placeholder in the .xml file, you're ready to go out and make things happen. In our working example, we had a class called BlankFragment. We can instantiate an instance of our fragment and use the fragment, along with the resource ID we set up in the FrameLayout, to generate the fragment programmatically. Let's try it:
 
 <pre class="prettyprint linenums pre-scrollable">
 BlankFragment myFragment = new BlankFragment();
@@ -91,7 +91,7 @@ As before, we declare a new instance of BlankFragment. Then, we get a fragment m
 
 <h2>A better solution</h2>
 
-<p>When working with a fragment programatically, as above, we often want to interact with the fragment outside of the particular method in which it was declared. In this case, if we want to access the fragment outside of onCreate(), we have a problem. If we were to call the constructor every time we wanted to get a reference to the fragment, we would end up with multiple instances of the fragment.
+<p>When working with a fragment programmatically, as above, we often want to interact with the fragment outside of the particular method in which it was declared. In this case, if we want to access the fragment outside of onCreate(), we have a problem. If we were to call the constructor every time we wanted to get a reference to the fragment, we would end up with multiple instances of the fragment.
 
 <p>Your first thoguht might be to split the declaration and the assignment of the fragment up. If you move the declaration into the MainActivity class as a private member variable rather than a local variable in onCreate(), you would think that reference would persist. If you did this, everything would appear to work fine until you do something like changing the orientation of the device. Suppose you had a (presumably) persistant private myFragment variable in the class as described. You could create a button and an event listener that would call the getSupportFragmentManager() code above, and another button that removes the fragment by calling .remove() instead. But if you try this, you'll note that changing the orientation of the device will lose the reference to the button!
 

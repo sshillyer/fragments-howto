@@ -1,66 +1,72 @@
-<h2 class="page-header">Privacy, Please!</h2>
-<p>A quick recap: So far we've seen how to make objects from a constructor using properties, configure the attributes on those properties, assign methods to their prototypes, and inherit from other objects to create Prototype Chaining to inherit behavior and steal data members from superclass constructors - aka, Prototypal Inheritance.</p>
+<h2 class="page-header">Resource Files to Control Layout</h2>
 
-<p>Let's now turn our attention to something I promised at the outset: Private data variables and methods vs. Public Methods and Properties. If you've studied JavaScript closures and Immediately Invoked Function Expressions, this should feel welcome and intuitive (peraps even self-evident!) to you. If not, I suggest some reading to get up to speed with the concepts.</p>
+<p>You can use resource files with specific naming conventions to control which layout file is used in an application based on various conditions. If you go into the Project pane view and drill into your app/src/res file, right clicking the res folder lets you select a new Android Resource Directory option, as shown here:
 
-<p>Let's lay down a monster-sized example. Let's finally 'privatize' our creature class from before. The key concept with this pattern is that we first define some variables. We're going to modify some of our design decisions a bit here, too: If we want private data accessible through a public method, we have to store the related functions on the object itself, rather than on the prototype. </p>
+<p><img src="img/new-resource-file.png">
 
-<h4><a href="examples/example14.js">Example 14 <span class="glyphicon glyphicon-file"></span></a></h4>
+<p>The Resource Type should be changed to Layout in the second dropdown. Then you can name the directory something like layout-w820dp. The w indicates that the files should be used when the width of the device in its current orientation is at least some number of pixes wide. The 820 is the number of pixels, and dp indicates we are using the device independent pixels metric. I suggest you read up on the android guides about <a href="https://developer.android.com/guide/practices/screens_support.html">supporting multiple screens on the Android developer site</a> to get some more information if this is foggy or unknown terminology to you.
+
+<p>Let's hit "reset" and start a new project. We are going to create a new project called LayoutDemo and make a BasicActivity template, checking the "use fragment" option on the last page before clicking finish. When we do so, we end up with a MainActivity class and a MainActivityFragment class. Also, for resources, you'll see a activity_main, content_main, and fragment_main xml file.
+
+<p>Running the app in its present state will look identical on the two devices. Let's show how we can use the resource file to provide a different view depending on the device pixels. Go ahead and create the resouce directory layout-w820dp inside of this project and selecting the "layout" as the type as indicated earlier on this page.
+
+<p>We're going to create a different version of content_main.xml now, copy and pasting the entire file from the layout file into the layout-w820dp directory we just created:
+
+<p><img src="img/content-main-copy.png">
+
+<p>In this new content_main.xml file, we need to make a number of changes. We're going to set up a linear layout so that we can nest a fragment and a FrameLayout element inside of it. We've worked with both types of objects before, and I'm assuming you already understand what a LinearLayout is, so I'll just show the code in a moment. This is just a LinearLayout where the fragment is on the left and the anchor for our second fragment, which we will add a fragment to programatically, will be on the right.
+
+<p>Here's the code:
 <pre class="prettyprint linenums pre-scrollable">
-function Creature(name, str) {
-  var strength  = str || 100;    // Private
-  this.name = name || "Unnamed"; // Public
-  
-  this.getStrength = function() {
-    console.log("Getting strength...");
-    return strength;
-  };
-  
-  this.levelUp = function() {
-    console.log("Leveling up...");
-    strength += 10;
-  };
- 
-  this.printInfo = function() {
-    console.log("Name: " + this.name +", Strength: " + strength);
-  }
-}
- 
-// Our "superclass"
-Creature.prototype = {
-  constructor: Creature,  
- 
-  // This is okay, name is not private.
-  battleCry: function() {
-    console.log(this.name + " will crush you!");
-  }
-};
- 
-// Subclass of Creature
-function Furry(name, strength) {
-  // call superclass constructor to 'steal' the public methods and data members
-  Creature.call(this, name, strength); 
-}
- 
-// Here's the prototypal inheritance
-Furry.prototype = new Creature();   
-Furry.prototype.constructor = Furry; 
- 
-Furry.prototype.shed = function() {
-  console.log(this.name + " sheds all over the floor. Ew!");
-}
- 
-var ogre = new Creature("Shrek");
-ogre.name = "Bob"; // Doesn't work!
-console.log(ogre.getStrength()); // 100
-ogre.levelUp();
-ogre.printInfo(); // "Name: Shrek, Strength: 110"
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    &lt;fragment
+        android:id="@+id/fragment"
+        android:name="com.example.admin.layoutdemo.MainActivityFragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        tools:layout="@layout/fragment_main" />
+
+    &lt;FrameLayout
+        android:id="@+id/detail_fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+&lt;/LinearLayout>
 </pre>
 
-<p>There's a lot going on here, so let's review the code and make some observations. The biggest thing to note is that we declare stength as a variable, instead of contextually applying it as a property that's attached to the local <code>this</code> parameter inside of Creature. What does that mean? Well, normally strength would fall out of scope when the function ends, but because of our friend Closure, this is not the case. The functions nested inside of the constructor function know about strength and are able to access it still.</p> 
+<h4>Interacting with the layout</h4>
+<p>Remember when I mentioned that boolean back at the beginning of this tutorial? Well, we're finally going to use it. Navigate to the MainActivity class and create the private variable:
 
-<p>Aha! So we have a private member. I suggest downloading this code and running it on your machine and testing out what happens if you try to access ogre.strength directly. Undefined! If you've played with closures a bit and debugged them, this should come as no surprise to you.</p>
+<pre class="prettyprint">
+private boolean mTablet;
+</pre>
 
-<p>We could pretty easily make name private and provide a get function, a set function, etc. And so it is for any of the data members here - by declaring a local variable, we close over them with other functions and create effectively private data members. We've defined public methods to allow our user to interact, and demonstrated a simple case of inheritance.</p>
+<p>Also, go add "android:id="@+id/textOutput" to the TextView in the fragment_main.xml file so that we can put some text there.
+<p>Finally, go into the MainActivity class and add the folowing code. It's nothing new or special - we're just trying to find the detail_fragment_container and, if it's not there, we set mTablet to false because we are obviously using a smaller device. Otherwise we set it to true - this happens when the resource file we created is being used because the pixel width is 820 or higher. At that point, we could programatically add a fragment using the methods discussed previously in this tutorial; let your creativity flow! Or good design principles, at least.
 
-<p>I hope that this swift tour of object-oriented JavaScript has been helpful to you. On the next page I have a few suggestions on what to read and do next.</p>
+<pre class="prettyprint linenums">
+protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Go find the fragment container we set up - if it exists
+        ViewGroup fragmentContainer = (ViewGroup) findViewById(R.id.detail_fragment_container);
+        // if fragmentContainer is null, then small device -- using original content_main
+        mTablet = (fragmentContainer != null);
+
+        // Grab a textview
+        TextView tvOutput = (TextView) findViewById(R.id.textOutput);
+        tvOutput.setText("mTablet is set to " + mTablet);
+</pre>
+
+<p><img src="img/phone-frag-check.png"></img>
+<p><img src="img/tablet-frag-check.png"></img>

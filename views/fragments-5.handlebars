@@ -1,7 +1,7 @@
 <h2 class="page-header">Removing Fragments</h2>
 <p>Let's add a couple of buttons to the activity_main.xml file using the Design view. Edit the text of one button to say "Add Fragment". Then go into Text mode and add an event handler to the button:
 
-<pre class="prettyprint linenums">android:onClick="addClickHandler"
+<pre class="prettyprint">android:onClick="addClickHandler"
 </pre>
 <p>Rinse and repeate for the second button, but using "Remove Fragment" and "removeClickHandler". 
 
@@ -10,7 +10,7 @@
 <p>Now, let's implement the clickHandler() method. Move the getSupportFragmentManager() call from the onCreate method down into the clickHandler() method. We still assign a new BlankFragment to the myFragment variable in onCreate(), but the fragment won't be added to the fragment_container until we click the button.
 
 <p>Here's what the buttons you added to the activity_main.xml file should look like (roughly):
-<pre class="prettyprint linenums">
+<pre class="prettyprint">
     &lt;Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
@@ -39,11 +39,11 @@
 
 <p>Our new fun stuff happens in removeClickHandler(). First, we need to find a reference to the fragment. We can do this by calling getSupportFragmentManager().findFragmentById(). We will want to assign this to a variable so that we can call .remove() later. Here's what the statement looks like:
 
-<pre class="prettyprint linenums">
+<pre class="prettyprint">
 Fragment myFragment = getSupportFragmentManager()
   .findFragmentById(R.id.fragment_container);
 </pre>
-<p>Note that we simply pass in the id of the container to which we are adding the fragment in the addClickHandler() method. Now, if there is no fragment associated with that id, then myFragment will be set to <pre class="prettyprint linenums">null</pre>. If we use the FragmentManager to remove myFragment when its set to null, an exception will occur. So we check if myFragment is null before calling remove() on the reference that we've found.
+<p>Note that we simply pass in the id of the container to which we are adding the fragment in the addClickHandler() method. Now, if there is no fragment associated with that id, then myFragment will be set to null. If we use the FragmentManager to remove myFragment when its set to null, an exception will occur. So we check if myFragment is null before calling remove() on the reference that we've found.
 
 <p>Here's what the full class code should look like in MainActivity once you're at this point:
 

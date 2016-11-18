@@ -1,15 +1,15 @@
 <h1>Passing Data To a Fragment</h1>
 
-<p>Let's discuss the basics of passing data to a Fragment. We will need to first define a String key in the fragment. Go into the BlankFragment and add a String as the key:
+<p>Let's discuss the basics of passing data to a Fragment. We are going to use the Bundle class to do so. We will need to first define a String key in the fragment. Go into the BlankFragment and add a String as the key:
 
-<pre>public static final String MSG_KEY = "msg_key";</pre>
+<pre class="prettyprint linenums">public static final String MSG_KEY = "msg_key";</pre>
 
 <p>Next we're going to use the Bundle class to "group up" the data we want to send to the Fragment. This is done by declaring an instance of the Bundle class and then calling its putString() method to put the string into the bundle. Do this in the addClickHandler() method above the myFragment declaration. The first argument is the key that we defined in BlankFragment class. The second is the string we wish to pass in. Bundles can be pretty complex; for more details, you can <a href="https://developer.android.com/reference/android/os/Bundle.html">review the documentation</a>.
 
 
 <p>Then add a line after the declaration of the fragment and call its setArguments() method. The addClickListener() method should end up looking like this:
 
-<pre>
+<pre class="prettyprint linenums">
 public void addClickHandler(View view) {
 
     Bundle arguments = new Bundle();
@@ -27,7 +27,7 @@ public void addClickHandler(View view) {
 
 <p>We need to go into the BlankFragment class and actually do something with that data before we test out the function. Let's just hop into the BlankFragment's onCreateView method. We are going to modify the method so that we have a reference to the view, then update the TextView to have the text we passed in as an argument, before returning it. Here's what this looks like once we've made the changes - note that we have to go into the fragment_blank.xml file and update it to have an id by writing android:id="@+id/textView" as a new attribute for this to work.
 
-<pre>
+<pre class="prettyprint linenums">
 public View onCreateView(LayoutInflater inflater, ViewGroup container,
                          Bundle savedInstanceState) {
     // Inflate the layout for this fragment
