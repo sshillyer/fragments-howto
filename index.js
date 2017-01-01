@@ -31,9 +31,7 @@ var handlebars = require('express-handlebars').create({
     }
 });
 
-// Import express-session and set the secret
-var session = require('express-session');
-app.use(session({secret:'IWillNeverTell'}));
+
 
 
 // Tell express our default rendering engine and extensions
@@ -41,7 +39,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 // Set port and public folder for static content
-app.set('port', process.env.PORT || 3050); // defaults to 3050 if env.port not set
+app.set('port', process.env.PORT || 3002); // defaults to 3050 if env.port not set
 app.use(express.static(__dirname + '/public')); // tells express where to go for public static content like css, js, imgs, etc
 
 
@@ -105,7 +103,7 @@ app.use(function(err, req, res, next) {
 * Start Server    *
 ******************/
 
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'), '172.31.20.175', function(){
   console.log('Express started on http://52.26.146.27:' + 
               app.get('port') + 
               '; press Ctrl-C to terminate.' );
